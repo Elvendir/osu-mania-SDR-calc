@@ -18,15 +18,15 @@ songs_new_difficulty = []
 
 for element in os.listdir(folder_path):
 
-	file_path = folder_path+element
-
+	file_path = folder_path+'/'+element
+	name = element
 	(osu_difficulty,map,nb_columns)=extract_info(file_path)
 	
 	(stamina,kps_columns,i_columns) = calc_stamina(map,nb_columns)
 	
 	kps=calc_kps(kps_columns,i_columns,map)
 	overall_difficulty = calc_overall_difficulty(np.array(stamina),np.array(kps))
-	g.write(name';'overall_difficulty)
+	g.write(name+';'+str(overall_difficulty)+'\n')
 	songs_new_difficulty.append(overall_difficulty)
 
 g.close()
