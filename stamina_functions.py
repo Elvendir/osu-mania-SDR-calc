@@ -75,6 +75,6 @@ def dif_eq(kps, t, s, list_i, i):
     Delta_t = t[i] - t[i_m1]
     (s_targeted, dg) = calc_target(kps, t, s, list_i, i)
     if s[i_m1] > s_targeted:
-        return s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_higher
+        return (s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_higher, s_targeted)
     else:
-        return s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_lower
+        return (s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_lower, s_targeted)
