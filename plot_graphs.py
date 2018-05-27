@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_stamina_kps_graphics(name,nb_columns,i_columns,kps_columns,rho,s_local,s_local_max,s_global,s_global_max):
+def plot_stamina_kps_graphics(name,nb_columns,i_columns,kps_columns,rho,s_local,s_local_max,s_global,s_global_max,t):
     plt.figure()
     plt.title(name)
     for k in range(nb_columns):

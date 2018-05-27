@@ -27,6 +27,7 @@ for element in os.listdir(folder_path):
     overall_difficulty = calc_overall_difficulty(np.array(stamina), np.array(kps))
     g.write(name + ';' + str(overall_difficulty) + '\n')
     songs_new_difficulty.append(overall_difficulty)
+    t = map[:, 2] / 1000
     plot_stamina_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_local, s_local_max, s_global,
-                              s_global_max)
+                              s_global_max,t)
 g.close()
