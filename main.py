@@ -11,12 +11,10 @@ from map_extraction import *
 
 
 g = codecs.open('DATAs','w','utf-8')
-
-folder_path = "" #path of floder with .osu files
+print('Folder with only .osu files')
+folder_path = input()
 
 songs_new_difficulty = []
-songs_osu_difficulty = []
-
 
 for element in os.listdir(folder_path):
 
@@ -29,10 +27,8 @@ for element in os.listdir(folder_path):
 	kps=calc_kps(kps_columns,i_columns,map)
 	overall_difficulty = calc_overall_difficulty(np.array(stamina),np.array(kps))
 	g.write(name';'overall_difficulty)
-	songs_osu_difficulty.append(osu_difficulty)
 	songs_new_difficulty.append(overall_difficulty)
-	
-plt.plot(songs_osu_difficulty,songs_new_difficulty,'+')
+
 g.close()
 
 
