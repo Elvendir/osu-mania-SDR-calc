@@ -15,7 +15,6 @@ folder_path = input()
 g = codecs.open('DATAs', 'w', 'utf-8')
 
 songs_new_difficulty = []
-songs_osu_difficulty = []
 
 for element in os.listdir(folder_path):
     file_path = folder_path + '/' + element
@@ -30,5 +29,4 @@ for element in os.listdir(folder_path):
     songs_new_difficulty.append(overall_difficulty)
     plot_stamina_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_local, s_local_max, s_global,
                               s_global_max)
-plt.plot(songs_osu_difficulty, songs_new_difficulty, '+')
 g.close()
