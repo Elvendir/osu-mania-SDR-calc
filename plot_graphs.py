@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def plot_stamina_kps_graphics(name,nb_columns,i_columns,kps_columns,rho,s_local,s_local_max,s_global,s_global_max,t):
-    plt.figure()
-    plt.title(name)
+
+
     for k in range(nb_columns):
         i = len(s_local) - 1
         if i_columns[i - 1][k] != i:
@@ -23,11 +23,10 @@ def plot_stamina_kps_graphics(name,nb_columns,i_columns,kps_columns,rho,s_local,
         ax1.plot(t_k, s_local_k, 'r', linewidth=2)
         ax1.plot(t_k, s_local_max_k, 'k', linewidth=2)
         ax2.plot(t_k, kps_k, 'b')
-
+    plt.title(name)
     ax1 = plt.subplot(nb_columns + 1, 1, nb_columns + 1)
     ax2 = ax1.twinx()
     ax1.plot(t, s_global, 'r', linewidth=2)
     ax1.plot(t, s_global_max, 'k', linewidth=2)
     ax2.plot(t, rho, 'b')
-
     plt.show()
