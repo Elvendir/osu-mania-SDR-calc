@@ -8,7 +8,7 @@ import time
 from main_functions import *
 from calc_stamina import *
 from map_extraction import *
-from plot_graphics import *
+from plot_graphs import *
 
 print('Folder with only .osu files')
 folder_path = input()
