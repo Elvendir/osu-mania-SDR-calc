@@ -21,9 +21,9 @@ for element in os.listdir(folder_path):
     name = element
     (map, nb_columns) = extract_info(file_path)
 
-    (stamina, kps_columns, i_columns) = calc_stamina(map, nb_columns)
+    (stamina, kps_columns, i_columns, rho, s_local, s_local_max, s_global, s_global_max) = calc_stamina(map, nb_columns)
 
-    kps = calc_kps(kps_columns, i_columns, map, rho, s_local, s_local_max, s_global, s_global_max)
+    kps = calc_kps(kps_columns, i_columns, map)
     overall_difficulty = calc_overall_difficulty(np.array(stamina), np.array(kps))
     g.write(name + ';' + str(overall_difficulty) + '\n')
     songs_new_difficulty.append(overall_difficulty)
