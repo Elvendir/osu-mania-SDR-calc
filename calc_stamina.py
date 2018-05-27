@@ -9,7 +9,7 @@ def calc_stamina(map, nb_columns):
     s_local = [0]
     s_local_max = [0]
     s_global = [0]
-    s_local_max = [0]
+    s_global_max = [0]
 
     i_columns = [np.array([-1 for k in range(nb_columns)])]
     kps_columns = [np.array([0 for k in range(nb_columns)])]
