@@ -34,13 +34,16 @@ for element in os.listdir(folder_path):
     kps = calc_kps(kps_columns, columns)
 
     overall_difficulty = calc_overall_difficulty(np.array(stamina) * np.array(complexity), np.array(kps))
+    rms_kps = rms(np.array(kps) ** 2)
 
     g.write(name + ';' + str(overall_difficulty) + '\n')
-    print(name + '; dif = ' + str(overall_difficulty) + '; nb_note = ' + str(len(columns)) + '; calc_time = ' + str(
+    print(name + '; dif = ' + str(overall_difficulty) + '; rms_kps = ' + str(rms_kps) + '; nb_note = ' + str(
+        len(columns)) + '; calc_time = ' + str(
         time.time() - t0))
     t = map[:, 2] / 1000
-    plot_staminas_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_local, s_local_max, s_global,s_global_max,t)
-    plot_stamina_complexity(np.array(stamina),np.array(complexity),t)
+    plot_staminas_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_local, s_local_max, s_global,
+                               s_global_max, t)
+    plot_stamina_complexity(np.array(stamina), np.array(complexity), t)
 
 plt.show()
 g.close()
