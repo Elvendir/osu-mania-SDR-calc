@@ -30,9 +30,11 @@ for element in os.listdir(folder_path):
     kps = calc_kps(kps_columns, columns)
 
     overall_difficulty = calc_overall_difficulty(np.array(stamina) * np.array(complexity), np.array(kps))
+    rms_kps = rms(np.array(kps) ** 2)
 
     g.write(name + ';' + str(overall_difficulty) + '\n')
-    print(name + '; dif = ' + str(overall_difficulty) + '; nb_note = ' + str(len(columns)) + '; calc_time = ' + str(
+    print(name + '; dif = ' + str(overall_difficulty) + '; rms_kps = ' + str(rms_kps) + '; nb_note = ' + str(
+        len(columns)) + '; calc_time = ' + str(
         time.time() - t0))
 
 g.close()
