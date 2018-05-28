@@ -1,4 +1,5 @@
 import numpy as np
+from main_functions import *
 
 def calc_complexity (i_columns,map,nb_columns) :
     complexity = [0]
@@ -7,20 +8,19 @@ def calc_complexity (i_columns,map,nb_columns) :
         t = map[:,2]
         type = map[:,1]
         individual_complexity = 1
-        if i == 0:
-        else :
+        if i != 0:
             for k in range(nb_columns) :
                 i_k = i_columns[i][k]
                 i_k_inv = i_columns_inverted[i][k]
                 if i_k != i:
                     if t[i_k] == t[i] :
-                        if type_[i_k] == 1 or type_[i_k] == 0 :
+                        if type[i_k] == 1 or type[i_k] == 0 :
                             if type[i] == 2 :
                                 individual_complexity += 0.05
                             else :
                                 individual_complexity -= 0.05
                     elif t[i_k_inv] == t[i] :
-                        if type_[i_k_inv] == 1 or type_[i_k_inv] == 0 :
+                        if type[i_k_inv] == 1 or type[i_k_inv] == 0 :
                             if type[i] == 2 :
                                 individual_complexity += 0.05
                             else :
