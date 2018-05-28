@@ -50,7 +50,7 @@ def calc_target(kps, t, list_i, i):
     dg_max = 0
     kps_mean = kps[i]
 
-    while list_i[j - 1] > 0 and G(kps_min, t[i] - t[0]) > s_targeted_max and d_G(kps_min, t[i] - t[0]) > dg_max:
+    while list_i[j - 1] > 0 and G(kps_min, t[i] - t[0]) > s_targeted_max:
         Delta_t = t[j] - t[list_i[j - 1]]
         kps_mean = kps_mean + (kps[j] - kps_mean) * Delta_t / tau_kps_mean
         if kps_mean <= kps_min:

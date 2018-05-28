@@ -1,6 +1,11 @@
 import numpy as np
 from main_functions import *
 
+multiple_hit_correction = [[-0.05, -0.05, +0],
+                           [-0.05, -0.05, +0],
+                           [+0.05, +0.05, -0.05]]
+holding_correction = [+0.1, +0.1, -0.2]
+
 
 def calc_complexity(i_columns, map, nb_columns):
     complexity = [0]
@@ -15,24 +20,11 @@ def calc_complexity(i_columns, map, nb_columns):
                 i_k_inv = i_columns_inverted[i][k]
                 if i_k != i:
                     if t[i_k] == t[i]:
-                        if type[i_k] == 1 or type[i_k] == 0:
-                            if type[i] == 2:
-                                individual_complexity += 0.05
-                            else:
-                                individual_complexity -= 0.05
+                        individual_complexity += multiple_hit_correction[i][i_k]
                     elif t[i_k_inv] == t[i]:
-                        if type[i_k_inv] == 1 or type[i_k_inv] == 0:
-                            if type[i] == 2:
-                                individual_complexity += 0.05
-                            else:
-                                individual_complexity -= 0.05
+                        individual_complexity += multiple_hit_correction[i][i_k_inv]
                     else:
                         if type[i_k] == 1:
-                            if type[i] == 0:
-                                individual_complexity += 0.10
-                            elif type[i] == 1:
-                                individual_complexity += 0.20
-                            else:
-                                individual_complexity += 0.20
+                            individual_complexity += holding_correction[i]
         complexity.append(individual_complexity)
     return complexity
