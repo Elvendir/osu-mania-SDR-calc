@@ -13,7 +13,7 @@ LN_note_after_release_correction = .1
 def increment_i_column(i, i_columns, column):
     current_i_columns = [i_columns[i - 1][k] for k in range(len(i_columns[i - 1]))]
     current_i_columns[column] = i
-    return (np.array(current_i_columns))
+    return np.array(current_i_columns)
 
 
 def next_kps(i, i_columns, t, column, kps_columns, type):
@@ -29,7 +29,7 @@ def next_kps(i, i_columns, t, column, kps_columns, type):
         else:
             Delta_t = t[i] - t[i_columns[i - 1][column]]
             kps[column] = 1 / Delta_t
-    return (np.array(kps))
+    return np.array(kps)
 
 
 def G(kps, t):
@@ -41,10 +41,8 @@ def d_G(kps, t):
                                                                        kps ** 2 / kps_target ** 2) - 0.5 / tau_target
 
 
-def calc_target(kps, t, s, list_i, i):
+def calc_target(kps, t, list_i, i):
     j = i
-    j_p1 = j
-    j_max = 0
     kps_min = kps[i]
     s_targeted = 0
     s_targeted_max = 0
@@ -52,17 +50,15 @@ def calc_target(kps, t, s, list_i, i):
     dg_max = 0
     kps_mean = kps[i]
 
-    while list_i[j - 1] > 0:
+    while list_i[j - 1] > 0 and G(kps_min, t[i] - t[0]) > s_targeted_max and d_G(kps_min, t[i] - t[0]) > dg_max:
         Delta_t = t[j] - t[list_i[j - 1]]
         kps_mean = kps_mean + (kps[j] - kps_mean) * Delta_t / tau_kps_mean
         if kps_mean <= kps_min:
             kps_min = kps_mean
-        j_p1 = j
         j = list_i[j - 1]
         s_targeted = G(kps_min, t[i] - t[j])
         if s_targeted >= s_targeted_max:
             s_targeted_max = s_targeted
-            j_max = j
         dg = d_G(kps_min, t[i] - t[j])
         if dg > dg_max:
             dg_max = dg
@@ -73,8 +69,16 @@ def calc_target(kps, t, s, list_i, i):
 def dif_eq(kps, t, s, list_i, i):
     i_m1 = list_i[i - 1]
     Delta_t = t[i] - t[i_m1]
-    (s_targeted, dg) = calc_target(kps, t, s, list_i, i)
+    (s_targeted, dg) = calc_target(kps, t, list_i, i)
     if s[i_m1] > s_targeted:
-        return (s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_higher, s_targeted)
+        next_s = s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_higher
+        if next_s > 0:
+            return (next_s,s_targeted)
+        else:
+            return (0,s_targeted)
     else:
-        return (s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_lower, s_targeted)
+        next_s = s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_lower
+        if next_s > 0:
+            return (next_s,s_targeted)
+        else:
+            return (0,s_targeted)

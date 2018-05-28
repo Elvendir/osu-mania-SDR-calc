@@ -1,10 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import os
-import sys
-import codecs
-import glob
-import time
 
 power_kps = 2
 
@@ -19,7 +13,7 @@ def calc_kps(kps_columns, i_columns, map):
         for k in range(len(i_columns[0])):
             if i_columns[i - 1][k] != i_columns[i][k]:
                 kps.append(kps_columns[i][k])
-    return (kps)
+    return kps
 
 
 def calc_overall_difficulty(individual_difficulty, kps):

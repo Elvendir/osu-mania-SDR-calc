@@ -12,7 +12,6 @@ def extract_info(file):
     b1 = False
     map = []
     columns = []
-    i = 0
     while rd:
         b2 = False
         if b1:
@@ -20,7 +19,7 @@ def extract_info(file):
             for column in columns:
                 if column == int(object[0]):
                     b2 = True
-            if not (b2):
+            if not b2:
                 columns.append(int(object[0]))
             if object[3] == 128:
                 map.append(np.array([int(object[0]), 1, int(object[2])]))
