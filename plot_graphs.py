@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 def plot_stamina_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_local, s_local_max, s_global,
                               s_global_max, t):
+    plt.figure()
     for k in range(nb_columns):
         i = len(s_local) - 1
         if i_columns[i - 1][k] != i:
