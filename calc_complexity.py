@@ -13,7 +13,7 @@ holding_correction = [+0.2, +0.2, +0.2]  # bonus when another note is hold, colu
 
 
 def calc_complexity(i_columns, map, nb_columns):
-    complexity = [0]
+    complexity = [1]
     i_columns_inverted = strange_invert_list(i_columns, i_columns)
     for i in range(1, len(map)):
         t = map[:, 2]

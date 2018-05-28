@@ -68,14 +68,17 @@ def calc_target(kps, t, s, list_i, i):  # searching to maximize s_targeted with 
         Delta_t = t[j] - t[list_i[j - 1]]
         kps_mean = kps_mean + (kps[j] - kps_mean) * Delta_t / tau_kps_mean  # dif eq for kps_mean
         if kps_mean <= kps_min:
-            kps_min = kps_mean  # using as kps in G and d_G the lowest kps_mean encountered
+            if kps_mean <= 0:
+                kps_min = 0
+            else:
+                kps_min = kps_mean
         j = list_i[j - 1]
         s_targeted = G(kps_min, t[i] - t[j])
         if s_targeted >= s_targeted_max:
             s_targeted_max = s_targeted
             j_max = j
-        dg = d_G(kps_min, t[i] - t[j])
-        if dg > dg_max:
+            dg = d_G(kps_min, t[i] - t[j])
+            # if dg > dg_max:
             dg_max = dg
     s_targeted_max += s[j_max] * np.exp((t[j_max] - t[i]) / tau_s_memory)  # adding the stamina memory term
     return (s_targeted_max, dg_max)
@@ -85,15 +88,15 @@ def dif_eq(kps, t, s, list_i, i):  # apply discrete differential equation as dis
     i_m1 = list_i[i - 1]
     Delta_t = t[i] - t[i_m1]
     (s_targeted, dg) = calc_target(kps, t, s, list_i, i)
-    if s[i_m1] > s_targeted:
+    if s[i_m1] >= s_targeted:
         next_s = s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_higher
-        if next_s > 0:
+        if next_s > s_targeted:
             return next_s
         else:
-            return 0
+            return s_targeted
     else:
         next_s = s[i_m1] + dg * Delta_t + (s_targeted - s[i_m1]) * Delta_t / tau_lower
-        if next_s > 0:
+        if next_s < s_targeted:
             return next_s
         else:
-            return 0
+            return s_targeted
