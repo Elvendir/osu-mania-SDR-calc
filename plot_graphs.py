@@ -36,6 +36,6 @@ def plot_staminas_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_
 
 def plot_stamina_complexity(stamina, complexity, t):
     plt.figure()
-    plt.plot(t, complexity, 'g')
-    plt.plot(t, stamina, 'b')
-    plt.plot(t, complexity * stamina, 'r')
+    plt.plot(t, complexity * stamina, 'r', linewidth=1)
+    plt.plot(t, stamina, 'b', linewidth=0.5)
+    plt.plot(t, complexity, 'g', linewidth=0.5)
