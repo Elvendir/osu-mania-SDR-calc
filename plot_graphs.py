@@ -2,40 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_staminas_kps_graphics(name, nb_columns, i_columns, kps_columns, rho, s_local, s_local_max, s_global,
-                               s_global_max, t):
+def plot_kps_felt_kps_graphics(name, nb_columns, i_columns, kps_columns, felt_kps, t):
     plt.figure()
+    plt.title(name)
     for k in range(nb_columns):
-        i = len(s_local) - 1
+        i = len(felt_kps) - 1
         if i_columns[i - 1][k] != i:
             i = i_columns[i - 1][k]
         t_k = [t[i]]
-        s_local_k = [s_local[i]]
-        s_local_max_k = [s_local_max[i]]
+        felt_kps_k = [felt_kps[i]]
         kps_k = [kps_columns[i][k]]
         while i_columns[i - 1][k] > 0:
             i = i_columns[i - 1][k]
             t_k.append(t[i])
-            s_local_k.append(s_local[i])
-            s_local_max_k.append(s_local_max[i])
+            felt_kps_k.append(felt_kps[i])
             kps_k.append(kps_columns[i][k])
-        ax1 = plt.subplot(nb_columns + 1, 1, k + 1)
-        ax2 = ax1.twinx()
-        if k == 0:
-            plt.title(name)
-        ax2.plot(t_k, kps_k, 'b', linewidth=0.5)
-        ax1.plot(t_k, s_local_max_k, 'k', linewidth=1.1)
-        ax1.plot(t_k, s_local_k, 'r', linewidth=1)
+        plt.subplot(nb_columns, 1, k + 1)
+        plt.plot(t_k, (np.array(felt_kps_k)**2-np.array(kps_k)**2), 'b', linewidth=0.5)
 
-    ax1 = plt.subplot(nb_columns + 1, 1, nb_columns + 1)
-    ax2 = ax1.twinx()
-    ax2.plot(t, rho, 'b', linewidth=0.5)
-    ax1.plot(t, s_global_max, 'k', linewidth=1.1)
-    ax1.plot(t, s_global, 'r', linewidth=1)
-
-
-def plot_stamina_complexity(stamina, complexity, t):
-    plt.figure()
-    plt.plot(t, complexity * stamina, 'r', linewidth=1)
-    plt.plot(t, stamina, 'b', linewidth=0.5)
-    plt.plot(t, complexity, 'g', linewidth=0.5)
