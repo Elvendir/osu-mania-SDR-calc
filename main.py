@@ -25,15 +25,14 @@ for element in os.listdir(folder_path):
     name = element
     (map, nb_columns) = extract_info(file_path)
     columns = map[:, 0]
-    (stamina, kps_columns, i_columns) = calc_stamina(map, nb_columns)
-    complexity = calc_complexity(i_columns, map, nb_columns)
+    (felt_kps, kps_columns) = calc_stamina(map, nb_columns)
+    #complexity = calc_complexity(i_columns, map, nb_columns)
     kps = calc_kps(kps_columns, columns)
-
-    overall_difficulty = calc_overall_difficulty(np.array(stamina) * np.array(complexity), np.array(kps))
+    overall_difficulty = rms(np.array(felt_kps)**2)
     rms_kps = rms(np.array(kps) ** 2)
 
     g.write(name + ';' + str(overall_difficulty) + '\n')
-    print(name + '; dif = ' + str(overall_difficulty) + '; rms_kps = ' + str(rms_kps) + '; nb_note = ' + str(
+    print('dif = ' + str(overall_difficulty) + '; rms_kps = ' +  str(rms_kps) +'; name = ' + name  + '; nb_note = ' + str(
         len(columns)) + '; calc_time = ' + str(
         time.time() - t0))
 

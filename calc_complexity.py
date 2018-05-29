@@ -5,7 +5,7 @@ from main_functions import *
 Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
-multiple_hit_correction = [[-0.05, -0.05, +0],  # bonus/malus when multiple hit at once on same timing
+multiple_hit_correction = [[-0.1, -0.05, +0],  # bonus/malus when multiple hit at once on same timing
                            [-0.05, -0.05, +0],  # lines : type of current note
                            [+0.05, +0.05, -0.05]]  # columns : type of other note at same timing
 
