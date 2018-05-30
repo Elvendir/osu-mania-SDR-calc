@@ -25,9 +25,9 @@ for element in os.listdir(folder_path):
     name = element
     (map, nb_columns) = extract_info(file_path)
     columns = map[:, 0]
-    (felt_kps, kps_columns) = calc_stamina(map, nb_columns)
+    (felt_kps, kps) = calc_stamina(map, nb_columns)
     #complexity = calc_complexity(i_columns, map, nb_columns)
-    kps = calc_kps(kps_columns, columns)
+
     overall_difficulty = rms(np.array(felt_kps)**2)
     rms_kps = rms(np.array(kps) ** 2)
 

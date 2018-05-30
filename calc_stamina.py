@@ -8,6 +8,7 @@ def calc_stamina(map, nb_columns):
     '''
     Time now in seconds !!!
     '''
+    columns = map[:, 0]
     type = map[:, 1]
     felt_kps = [0]
 
@@ -17,13 +18,12 @@ def calc_stamina(map, nb_columns):
     kps_columns = [np.array([0 for k in range(nb_columns)])]
     # kps_columns structure: for i in column k, kps_columns[i-1][k] gives kps_note of the note before i in k column
     # if first note of column kps == 0
-    # rho = [0]
 
-    column = map[0][0]
+    column = columns[0]
     i_columns[0][column] += 1  # init i_columns with first note
 
     for i in range(1, len(map)):  # calculate felt_kps > kps because of stamina
-        column = map[i][0]
+        column = columns[i]
         i_columns.append(increment_i_column(i, i_columns, column))
         kps_columns.append(next_kps(i, i_columns, t, column, kps_columns, type))
 
@@ -35,14 +35,14 @@ def calc_stamina(map, nb_columns):
                                              np.array(i_columns)[:, column], i)
             felt_kps.append(current_felt_kps)
 
-    return (felt_kps, kps_columns)
-
-
-'''
     kps_columns_inverted = strange_invert_list(i_columns, kps_columns)
     # makes kps_columns_inverted[i+1][k] be the value of kps for the next note in column k
     # while kps_columns[i-1][k] still gives the value of kps for the note before in column k
     # value after the last note of the column are fixed to 0 for kps_columns_inverted
+
+    rho = [0]
+    felt_rho = [0]
+    trivial_list = [k for k in range(len(t))]
 
     for i in range(1, len(map)):  # calculate global stamina
         kps_columns_same_timing_xor_next = []
@@ -54,7 +54,14 @@ def calc_stamina(map, nb_columns):
         rho.append(rms(np.array(kps_columns_same_timing_xor_next)))
         # rho is the 'kps_density' calculate with a rms of the kps of each column
         # the kps used is the one of note with same timing point and if there isn't the kps of next one in the column
-        current_s = dif_eq(rho, t, s_global, trivial_list, i)
-        s_global.append(current_s)
-'''
-# stamina_total = 1 + np.array(s_local) + np.sqrt(nb_columns - 1) * np.array(s_global) / 4  # formula for s_total
+        current_felt_rho = calc_kps_felt(rho, t, felt_rho, trivial_list, i)
+        felt_rho.append(current_felt_rho)
+
+    kps = calc_kps(kps_columns, columns)
+    coef = []
+    for i in range(len(map)):
+        if kps[i] == 0:
+            coef.append(0)
+        else:
+            coef.append(0.5 * np.sqrt(nb_columns - 1) * (felt_rho[i] / rho[i] - 1 ) + felt_kps[i] / kps[i] )
+    return (np.array(coef) * np.array(kps), kps)
