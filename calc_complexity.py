@@ -4,26 +4,32 @@ import numpy as np
 Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
-multiple_hit_correction = [[-0.1, -0.05, +0],  # bonus/malus when multiple hit at once on same timing
-                           [-0.05, -0.05, +0],  # lines : type of current note
-                           [+0.05, +0.05, -0.05]]  # columns : type of other note at same timing
-
-holding_correction = [+0.2, +0.2, +0.2]  # bonus when another note is hold, columns : type of current note
+base_elements_complexity = [[0, 0.05, 0.07, None, None],  # value for base elements of 2 timing points patterns
+                            [0.05, 0.1, 0.12, None, None],  # lines : type of note 1st timing point
+                            [None, None, None, 0.09, 0.07],
+                            [0.04, 0.09, None, None, None],
+                            [None, None, None, 0.04, 0.02]]  # columns : type of note 2nd timing point
 
 
 def calc_complexity_2_tp(pattern1, pattern0):
     complexity_2_tp = 0
+    nb_columns = len(pattern0)
     middle = int(np.ceil(len(pattern1) / 2))
     pattern_2_tp = np.array([pattern1, pattern0])
     pattern_2_tp_reversed = np.array([pattern0, pattern1])
+
     if np.array_equal(pattern1, pattern0):
         complexity_2_tp -= 0.05
     if np.array_equal(pattern1, pattern0[::-1]):
         complexity_2_tp -= 0.05
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp[middle:]):
+    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp[nb_columns-middle:]):
         complexity_2_tp -= 0.05
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp_reversed[middle:]):
+    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp_reversed[nb_columns-middle:]):
         complexity_2_tp -= 0.05
+
+    for k in range(nb_columns):
+        complexity_2_tp += base_elements_complexity[pattern0[k]][pattern1[k]]
+
     return complexity_2_tp
 
 
@@ -34,7 +40,7 @@ def compression_correction(l1, l0):
 
 def calc_complexity(map, i_to_j, patterns, columns):
     global_complexity = [1]
-    complexity_patterns = [1]
+    complexity_patterns = [0]
     complexity_patterns.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
     global_complexity.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
     for j in range(2, i_to_j[len(columns) - 1] + 1):
