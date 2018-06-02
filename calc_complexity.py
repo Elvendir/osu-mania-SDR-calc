@@ -7,7 +7,7 @@ Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 base_elements_complexity = [[0, 0.05, 0.07, None, None],  # value for base elements of 2 timing points patterns
                             [0.05, 0.1, 0.12, None, None],  # lines : type of note 1st timing point
                             [None, None, None, 0.09, 0.07],
-                            [0.04, 0.09, None, None, None],
+                            [0.04, 0.09, 0.11, None, None],
                             [None, None, None, 0.04, 0.02]]  # columns : type of note 2nd timing point
 
 
@@ -17,7 +17,6 @@ def calc_complexity_2_tp(pattern1, pattern0):
     middle = int(np.ceil(len(pattern1) / 2))
     pattern_2_tp = np.array([pattern1, pattern0])
     pattern_2_tp_reversed = np.array([pattern0, pattern1])
-
     if np.array_equal(pattern1, pattern0):
         complexity_2_tp -= 0.05
     if np.array_equal(pattern1, pattern0[::-1]):

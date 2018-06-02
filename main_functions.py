@@ -26,9 +26,9 @@ def next_kps(i, i_columns, t, column, kps_columns, type):
         if type[i] == 2:
             Delta_t = t[i] - t[i_columns[i - 1][column]] + LN_release_kps_correction
             kps[column] = 1 / Delta_t
-        if type[i_columns[i - 1][column]] == 2:
+        if type[i_columns[i - 1][column]] == 2 :
             Delta_t = max((t[i] - t[i_columns[i - 1][column]] + LN_release_kps_correction,
-                           t[i] - t[i_columns[i_columns[i - 1]][column]]))
+                           t[i] - t[i_columns[i_columns[i - 1][column]][column]]))
             kps[column] = 1 / Delta_t
         else:
             Delta_t = t[i] - t[i_columns[i - 1][column]]
@@ -45,7 +45,7 @@ def build_patterns(type, column, t, patterns, nb_columns, current_t, j, i):
         patterns.append(np.array([0 for k in range(nb_columns + 1)]))
         for k in range(1, nb_columns + 1):
             if patterns[j - 1][k] == 2 or patterns[j - 1][k] == 4:
-                patterns[j][k] == 4
+                patterns[j][k] = 4
         patterns[j][0] = t[i]-patterns[j-1][0]
         patterns[j][column + 1] = type[i] + 1
         next_t = t[i]
