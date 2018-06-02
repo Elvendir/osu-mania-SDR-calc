@@ -4,11 +4,11 @@ import numpy as np
 Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
-base_elements_complexity = [[0, 0.05, 0.07, None, None],  # value for base elements of 2 timing points patterns
-                            [0.05, 0.1, 0.12, None, None],  # lines : type of note 1st timing point
-                            [None, None, None, 0.09, 0.07],
-                            [0.04, 0.09, 0.11, None, None],
-                            [None, None, None, 0.04, 0.02]]  # columns : type of note 2nd timing point
+base_elements_complexity = [[0, 0.01, 0.012, None, None],  # value for base elements of 2 timing points patterns
+                            [0.01, 0, 0.002, None, None],  # lines : type of note 1st timing point
+                            [None, None, None, 0.001, 0.02],
+                            [0.005, -0.005, -0.003, None, None],
+                            [None, None, None, 0.02, 0.03]]  # columns : type of note 2nd timing point
 
 
 def calc_complexity_2_tp(pattern1, pattern0):
@@ -20,11 +20,11 @@ def calc_complexity_2_tp(pattern1, pattern0):
     if np.array_equal(pattern1, pattern0):
         complexity_2_tp -= 0.05
     if np.array_equal(pattern1, pattern0[::-1]):
-        complexity_2_tp -= 0.05
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp[nb_columns-middle:]):
-        complexity_2_tp -= 0.05
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp_reversed[nb_columns-middle:]):
-        complexity_2_tp -= 0.05
+        complexity_2_tp -= 0.02
+    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp[nb_columns - middle:]):
+        complexity_2_tp -= 0.03
+    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp_reversed[nb_columns - middle:]):
+        complexity_2_tp -= 0.03
 
     for k in range(nb_columns):
         complexity_2_tp += base_elements_complexity[pattern0[k]][pattern1[k]]
@@ -49,4 +49,4 @@ def calc_complexity(map, i_to_j, patterns, columns):
     global_complexity_i = []
     for i in range(len(i_to_j)):
         global_complexity_i.append(global_complexity[i_to_j[i]])
-    return global_complexity_i
+    return np.array(global_complexity_i)

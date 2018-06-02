@@ -31,11 +31,10 @@ for element in os.listdir(folder_path):
     complexity = np.array(calc_complexity(map, i_to_j, np.array(patterns), columns))
     felt_kps = complexity*np.array(kps)
     felt_kps_columns = columns_of_lin(felt_kps, columns, nb_columns)
-    felt_kps = calc_felt_kps_stamina(map, i_columns, kps_columns)
-    felt_kps = np.array(complexity) * np.array(kps)
+    felt_kps = calc_felt_kps_stamina(map, i_columns, felt_kps_columns)
 
-    overall_difficulty = rms(np.array(felt_kps) ** 2)
-    rms_kps_2 = rms(np.array(kps) ** 2)
+    overall_difficulty = rms(np.array(felt_kps))
+    rms_kps_2 = rms(np.array(kps))
 
     g.write(name + ';' + str(overall_difficulty) + '\n')
     print('dif = ' + str(overall_difficulty) + '; rms_complexity = ' + str(rms(complexity)) + '; rms_kps = ' + str(

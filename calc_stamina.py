@@ -14,7 +14,7 @@ tau_kps_mean = 30  # typical time of decay of kps_mean when searching for G_curr
 
 def G(kps, t):  # ideal reward for constant kps
     dif_kps = kps / kps_target
-    norm = 5 * np.log(2)
+    norm = 10 * np.log(2)
     x = t / tau_target
     return (np.log(x + 1) - np.log(x + 1) * np.exp(-x ** 2 * dif_kps ** 4)) / norm
 
