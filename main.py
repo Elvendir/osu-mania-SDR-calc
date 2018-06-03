@@ -34,14 +34,15 @@ for element in os.listdir(folder_path):
     felt_kps = calc_felt_kps_stamina(map, i_columns, felt_kps_columns)
 
     overall_difficulty = np.mean(np.array(felt_kps))
-    rms_kps_2 = np.mean(np.array(kps))
+    mean_kps = np.mean(np.array(kps))
 
     g.write(name)
     g.write(';' + str(nb_columns))
     g.write(';' + str(true_nb_columns))
     g.write(';' + str(overall_difficulty) + '\n')
-    print('dif = ' + str(overall_difficulty) + '; rms_complexity = ' + str(rms(complexity)) + '; rms_kps = ' + str(
-        rms_kps_2) + '; name = ' + name + '; nb_note = ' + str(
+    print('dif = ' + str(overall_difficulty) + '; mean_complexity =' + str(
+        np.mean(np.array(complexity))) + '; mean_kps = ' + str(
+        mean_kps) + '; name = ' + name + '; nb_note = ' + str(
         len(columns)) + '; calc_time = ' + str(
         time.time() - t0) + '; nb_columns = ' + str(nb_columns) + '; true_nb =' + str(true_nb_columns))
 
