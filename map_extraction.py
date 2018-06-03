@@ -39,7 +39,6 @@ def extract_info(file_path):
                 map.append((int(object[0]), 0, int(object[2])))
         if rd.count('HitObjects') == 1:  # searching first note
             b1 = True
-        print(rd)
         if rd.count('CircleSize') == 1:  # searching first note
             true_nb_column = int(rd.split(':')[1])
         rd = f.readline()
