@@ -6,7 +6,7 @@ LN_note_after_release_correction = .15  # kps correction for note after LN relea
 
 
 def rms(list , k):  # gives the root mean square of a np.array
-    return pow(np.mean(list ** k),1/k)
+  return pow(np.mean(list ** k),1/k)
 
 
 def increment_i_column(i, i_columns, column):
@@ -26,9 +26,9 @@ def next_kps(i, i_columns, t, column, kps_columns, type):
         if type[i] == 2:
             Delta_t = t[i] - t[i_columns[i - 1][column]] + LN_release_kps_correction
             kps[column] = 1 / Delta_t
-        elif type[i_columns[i - 1][column]] == 2 :
+        elif type[i_columns[i - 1][column]] == 2:
             Delta_t = min((t[i] - t[i_columns[i - 1][column]] + LN_note_after_release_correction,
-                           t[i] - t[i_columns[i_columns[i - 1][column]-1][column]]))
+                           t[i] - t[i_columns[i_columns[i - 1][column] - 1][column]]))
             kps[column] = 1 / Delta_t
         else:
             Delta_t = t[i] - t[i_columns[i - 1][column]]
@@ -46,7 +46,7 @@ def build_patterns(type, column, t, patterns, nb_columns, current_t, j, i):
         for k in range(1, nb_columns + 1):
             if patterns[j - 1][k] == 2 or patterns[j - 1][k] == 4:
                 patterns[j][k] = 4
-        patterns[j][0] = t[i]-patterns[j-1][0]
+        patterns[j][0] = t[i] - patterns[j - 1][0]
         patterns[j][column + 1] = type[i] + 1
         next_t = t[i]
     return (patterns, j, next_t)

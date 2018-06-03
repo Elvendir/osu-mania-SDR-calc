@@ -39,20 +39,23 @@ def extract_info(file_path):
                 map.append((int(object[0]), 0, int(object[2])))
         if rd.count('HitObjects') == 1:  # searching first note
             b1 = True
+        if rd.count('CircleSize') == 1:  # searching first note
+            true_nb_column = int(rd.split(':')[1])
+            print(true_nb_column)
         rd = f.readline()
-    columns.sort()
-    for k in range(len(map)):  # rewriting column_id
-        i = 0
-        for column in columns:
-            if column == map[k][0]:
-                map[k] = (i, map[k][1], map[k][2])
-            i += 1
-    f.close()
-    dtype = [('column', int), ('type', int), ('timing', int)]
-    map = np.array(map, dtype=dtype)
-    map = np.sort(map, order='timing', kind='mergesort')
-    map_array = []
-    for i in range(len(map)):
-        map_array.append([map[i][0], map[i][1], map[i][2]])
-    map_array = np.array(map_array)
-    return (map_array, len(columns))
+        columns.sort()
+        for k in range(len(map)):  # rewriting column_id
+            i = 0
+            for column in columns:
+                if column == map[k][0]:
+                    map[k] = (i, map[k][1], map[k][2])
+                i += 1
+        f.close()
+        dtype = [('column', int), ('type', int), ('timing', int)]
+        map = np.array(map, dtype=dtype)
+        map = np.sort(map, order='timing', kind='mergesort')
+        map_array = []
+        for i in range(len(map)):
+            map_array.append([map[i][0], map[i][1], map[i][2]])
+        map_array = np.array(map_array)
+        return (map_array, len(columns), true_nb_column)

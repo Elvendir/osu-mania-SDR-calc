@@ -28,9 +28,6 @@ for element in os.listdir(folder_path):
     (i_columns, kps_columns, patterns, i_to_j) = everything_useful(map, nb_columns)
     columns = map[:, 0]
     kps = lin_of_columns(kps_columns, columns)
-    #complexity = np.array(calc_complexity(map, i_to_j, np.array(patterns), columns))
-    #felt_kps = complexity*np.array(kps)
-    #felt_kps_columns = columns_of_lin(felt_kps, columns, nb_columns)
     felt_kps = calc_felt_kps_stamina(map, i_columns, kps_columns)
 
     g.write(name)
@@ -42,5 +39,13 @@ for element in os.listdir(folder_path):
      #   rms_kps_2) + '; name = ' + name + '; nb_note = ' + str(
       #  len(columns)) + '; calc_time = ' + str(
        # time.time() - t0))
+    overall_difficulty = rms(np.array(felt_kps), 1)
+    rms_kps_2 = rms(np.array(kps), 1)
+
+    g.write(name + ';' + str(overall_difficulty) + '\n')
+    print('dif = ' + str(overall_difficulty) + '; rms_complexity = ' + str(rms(complexity)) + '; rms_kps = ' + str(
+        rms_kps_2) + '; name = ' + name + '; nb_note = ' + str(
+        len(columns)) + '; calc_time = ' + str(
+        time.time() - t0))
 
 g.close()
