@@ -18,7 +18,7 @@ Write all song_name;difficulty in a DATA file
 g = codecs.open('DATAs', 'w', 'utf-8')
 print('Folder with only .osu files')
 folder_path = input()
-g.write('name;nb_column;true_nb_columns;mean1 dif;mean1 kps;mean2 dif;mean2 kps;mean3 dif;mean3 kps;mean4 dif;mean4 kps;mean5 dif;mean5 \n')
+g.write('name;nb_column;true_nb_columns;dif \n')
 for element in os.listdir(folder_path):
     t0 = time.time()
     file_path = folder_path + '/' + element
