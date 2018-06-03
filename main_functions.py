@@ -5,8 +5,8 @@ LN_release_kps_correction = .07  # kps correction for LN release
 LN_note_after_release_correction = .15  # kps correction for note after LN release
 
 
-def rms(list , k):  # gives the root mean square of a np.array
-  return pow(np.mean(list ** k),1/k)
+def rms(list, k):  # gives the root mean square of a np.array
+    return pow(np.mean(list ** k), 1 / k)
 
 
 def increment_i_column(i, i_columns, column):
@@ -40,9 +40,11 @@ def build_patterns(type, column, t, patterns, nb_columns, current_t, j, i):
     if current_t == t[i]:
         patterns[j][column + 1] = type[i] + 1
         next_t = current_t
+        # j_to_i[j][column] = i
     else:
         j += 1
         patterns.append(np.array([0 for k in range(nb_columns + 1)]))
+        # j_to_i.append([-1 for k in range(nb_columns)])
         for k in range(1, nb_columns + 1):
             if patterns[j - 1][k] == 2 or patterns[j - 1][k] == 4:
                 patterns[j][k] = 4
@@ -62,9 +64,11 @@ def everything_useful(map, nb_columns):
     patterns = [np.array([0 for k in range(nb_columns + 1)])]
     j = 0
     i_to_j = [0]
+    # j_to_i = [[-1 for k in range(nb_columns)]]
 
     column = columns[0]
     i_columns[0][column] += 1
+    # j_to_i[0][column] += 1
     patterns[0][column + 1] = type[0] + 1
     current_t = t[0]
 

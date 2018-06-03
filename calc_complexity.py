@@ -41,6 +41,16 @@ def correlation_correction(pattern):
     return 1
 
 
+def noeud_i(i, i_to_j, patterns, columns):
+    j = i_to_j(i)
+    nb_columns = len(patterns[0])
+    noeud = [patterns[0]]
+    for k in range(nb_columns):
+        if patterns[j - 1][k+1] != 0:
+            noeud.append([k - columns[i],[j-1,k]])
+    return noeud
+
+
 def calc_complexity(map, i_to_j, patterns, columns):
     global_complexity = [1]
     complexity_patterns = [0]
