@@ -37,6 +37,10 @@ def compression_correction(l1, l0):
     return x ** 2 / (1 + x ** 4)
 
 
+def correlation_correction(pattern):
+    return 1
+
+
 def calc_complexity(map, i_to_j, patterns, columns):
     global_complexity = [1]
     complexity_patterns = [0]
@@ -44,8 +48,15 @@ def calc_complexity(map, i_to_j, patterns, columns):
     global_complexity.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
     for j in range(2, i_to_j[len(columns) - 1] + 1):
         complexity_patterns.append(calc_complexity_2_tp(patterns[j, 1:], patterns[j - 1, 1:]))
-        coef = compression_correction(patterns[j][0], patterns[j - 1][0])
-        global_complexity.append((1 + complexity_patterns[j]) * (1 + coef * (global_complexity[j - 1] - 1)))
+        l0 = patterns[j][0]
+        complexity = 0
+        j_cor = j - 1
+        dist = l0
+        while dist < 5 * l0 and j_cor > 0:
+            compression = compression_correction(patterns[j][0], patterns[j_cor][0])
+            correlation = correlation_correction(patterns[j], patterns[j_cor])
+            complexity += complexity * complexity_patterns[j] * 1
+            global_complexity.append((1 + complexity_patterns[j]) * (1 + compression * (global_complexity[j - 1] - 1)))
     global_complexity_i = []
     for i in range(len(i_to_j)):
         global_complexity_i.append(global_complexity[i_to_j[i]])

@@ -24,7 +24,7 @@ for element in os.listdir(folder_path):
     file_path = folder_path + '/' + element
     name = element
 
-    (map, nb_columns) = extract_info(file_path)
+    (map, nb_columns, true_nb_columns) = extract_info(file_path)
     (i_columns, kps_columns, patterns, i_to_j) = everything_useful(map, nb_columns)
     columns = map[:, 0]
     kps = lin_of_columns(kps_columns, columns)
@@ -40,6 +40,6 @@ for element in os.listdir(folder_path):
     print('dif = ' + str(overall_difficulty) + '; rms_complexity = ' + str(rms(complexity)) + '; rms_kps = ' + str(
         rms_kps_2) + '; name = ' + name + '; nb_note = ' + str(
         len(columns)) + '; calc_time = ' + str(
-        time.time() - t0))
+        time.time() - t0)+ '; nb_columns = '+ str(nb_columns)+'; true_nb ='+ str(true_nb_columns))
 
 g.close()
