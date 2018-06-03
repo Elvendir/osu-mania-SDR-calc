@@ -25,14 +25,13 @@ def next_kps(i, i_columns, t, column, kps_columns, type):
         # kps calculation with correction depending note_type and note_before_type
         if type[i] == 2:
             Delta_t = t[i] - t[i_columns[i - 1][column]] + LN_release_kps_correction
-            kps[column] = 1 / Delta_t
-        elif type[i_columns[i - 1][column]] == 2:
+        elif type[i_columns[i - 1][column]] == 2 :
+
             Delta_t = min((t[i] - t[i_columns[i - 1][column]] + LN_note_after_release_correction,
                            t[i] - t[i_columns[i_columns[i - 1][column] - 1][column]]))
-            kps[column] = 1 / Delta_t
         else:
             Delta_t = t[i] - t[i_columns[i - 1][column]]
-            kps[column] = 1 / Delta_t
+        kps[column] = 1 / Delta_t
     return np.array(kps)
 
 

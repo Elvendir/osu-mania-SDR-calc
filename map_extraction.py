@@ -42,13 +42,13 @@ def extract_info(file_path):
         if rd.count('CircleSize') == 1:  # searching first note
             true_nb_column = int(rd.split(':')[1])
         rd = f.readline()
-        columns.sort()
-        for k in range(len(map)):  # rewriting column_id
-            i = 0
-            for column in columns:
-                if column == map[k][0]:
-                    map[k] = (i, map[k][1], map[k][2])
-                i += 1
+    columns.sort()
+    for k in range(len(map)):  # rewriting column_id
+        i = 0
+        for column in columns:
+            if column == map[k][0]:
+                map[k] = (i, map[k][1], map[k][2])
+            i += 1
     f.close()
     dtype = [('column', int), ('type', int), ('timing', int)]
     map = np.array(map, dtype=dtype)
