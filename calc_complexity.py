@@ -4,11 +4,11 @@ import numpy as np
 Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
-base_elements_complexity = [[0, 0.01, 0.012, None, None],  # value for base elements of 2 timing points patterns
-                            [0.01, 0, 0.002, None, None],  # lines : type of note 1st timing point
-                            [None, None, None, 0.001, 0.02],
-                            [0.005, -0.005, -0.003, None, None],
-                            [None, None, None, 0.02, 0.03]]  # columns : type of note 2nd timing point
+base_elements_complexity = [[0, 0.01, 0.012, 0, 0],  # value for base elements of 2 timing points patterns
+                            [0.01, 0, 0.002, 0, 0],  # lines : type of note 1st timing point
+                            [0, 0, 0, 0.001, 0.02],
+                            [0.005, -0.005, -0.003, 0, 0],
+                            [0, 0, 0, 0.02, 0.03]]  # columns : type of note 2nd timing point
 
 
 def calc_complexity_2_tp(pattern1, pattern0):

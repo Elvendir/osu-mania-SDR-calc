@@ -2,7 +2,7 @@ import numpy as np
 
 power_kps = 2  # overall_difficulty power dependency on kps
 LN_release_kps_correction = .05  # kps correction for LN release
-LN_note_after_release_correction = .1  # kps correction for note after LN release
+LN_note_after_release_correction = .2  # kps correction for note after LN release
 
 
 def rms(list):  # gives the root mean square of a np.array
@@ -26,9 +26,9 @@ def next_kps(i, i_columns, t, column, kps_columns, type):
         if type[i] == 2:
             Delta_t = t[i] - t[i_columns[i - 1][column]] + LN_release_kps_correction
             kps[column] = 1 / Delta_t
-        if type[i_columns[i - 1][column]] == 2 :
-            Delta_t = max((t[i] - t[i_columns[i - 1][column]] + LN_release_kps_correction,
-                           t[i] - t[i_columns[i_columns[i - 1][column]][column]]))
+        elif type[i_columns[i - 1][column]] == 2 :
+            Delta_t = min((t[i] - t[i_columns[i - 1][column]] + LN_note_after_release_correction,
+                           t[i] - t[i_columns[i_columns[i - 1][column]-1][column]]))
             kps[column] = 1 / Delta_t
         else:
             Delta_t = t[i] - t[i_columns[i - 1][column]]
