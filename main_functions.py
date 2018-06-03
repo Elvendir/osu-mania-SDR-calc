@@ -1,12 +1,12 @@
 import numpy as np
 
 power_kps = 2  # overall_difficulty power dependency on kps
-LN_release_kps_correction = .05  # kps correction for LN release
-LN_note_after_release_correction = .2  # kps correction for note after LN release
+LN_release_kps_correction = .07  # kps correction for LN release
+LN_note_after_release_correction = .15  # kps correction for note after LN release
 
 
-def rms(list):  # gives the root mean square of a np.array
-    return np.sqrt(np.mean(list ** 2))
+def rms(list , k):  # gives the root mean square of a np.array
+    return pow(np.mean(list ** k),1/k)
 
 
 def increment_i_column(i, i_columns, column):
