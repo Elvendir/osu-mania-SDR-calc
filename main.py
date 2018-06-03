@@ -29,20 +29,20 @@ for element in os.listdir(folder_path):
     columns = map[:, 0]
     kps = lin_of_columns(kps_columns, columns)
     complexity = np.array(calc_complexity(map, i_to_j, np.array(patterns), columns))
-    felt_kps = complexity*np.array(kps)
+    felt_kps = complexity * np.array(kps)
     felt_kps_columns = columns_of_lin(felt_kps, columns, nb_columns)
     felt_kps = calc_felt_kps_stamina(map, i_columns, felt_kps_columns)
 
-    overall_difficulty = rms(np.array(felt_kps))
-    rms_kps_2 = rms(np.array(kps))
+    overall_difficulty = np.mean(np.array(felt_kps))
+    rms_kps_2 = np.mean(np.array(kps))
 
     g.write(name)
-    g.write(';'+str(nb_columns))
-    g.write(';'+str(true_nb_columns))
+    g.write(';' + str(nb_columns))
+    g.write(';' + str(true_nb_columns))
     g.write(';' + str(overall_difficulty) + '\n')
     print('dif = ' + str(overall_difficulty) + '; rms_complexity = ' + str(rms(complexity)) + '; rms_kps = ' + str(
         rms_kps_2) + '; name = ' + name + '; nb_note = ' + str(
         len(columns)) + '; calc_time = ' + str(
-        time.time() - t0)+ '; nb_columns = '+ str(nb_columns)+'; true_nb ='+ str(true_nb_columns))
+        time.time() - t0) + '; nb_columns = ' + str(nb_columns) + '; true_nb =' + str(true_nb_columns))
 
 g.close()
