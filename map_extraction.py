@@ -41,9 +41,7 @@ def extract_info(file_path):
             b1 = True
         print(rd)
         if rd.count('CircleSize') == 1:  # searching first note
-            print(1)
             true_nb_column = int(rd.split(':')[1])
-            print(true_nb_column)
         rd = f.readline()
         columns.sort()
         for k in range(len(map)):  # rewriting column_id
