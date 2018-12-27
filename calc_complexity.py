@@ -1,73 +1,56 @@
 import numpy as np
+import matplotlib.colors as col
+import matplotlib.pyplot as plt
 
 '''
 Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
-base_elements_complexity = [[0, 0.01, 0.012, 0, 0],  # value for base elements of 2 timing points patterns
-                            [0.01, 0, 0.002, 0, 0],  # lines : type of note 1st timing point
-                            [0, 0, 0, 0.001, 0.02],
-                            [0.005, -0.005, -0.003, 0, 0],
-                            [0, 0, 0, 0.02, 0.03]]  # columns : type of note 2nd timing point
+TF_time_scale = 1
+sample_size = 2000
+
+def create_array(map,nb_columns):
+    sample = []
+    t = map[:,2]
+    column = map[:,0]
+    for i in range(sample_size):
+        sample.append(np.array([0 for k in range(nb_columns+50*(nb_columns-1))]))
+    i=0
+    j=0
+    tc = t[0] + j * TF_time_scale
+    while t[i] <= tc :
+        sample[j][column[i]*50] = 1
+        i += 1
+    j = 1
+    return(sample,j,i)
 
 
-def calc_complexity_2_tp(pattern1, pattern0):
-    complexity_2_tp = 0
-    nb_columns = len(pattern0)
-    middle = int(np.ceil(len(pattern1) / 2))
-    pattern_2_tp = np.array([pattern1, pattern0])
-    pattern_2_tp_reversed = np.array([pattern0, pattern1])
-    if np.array_equal(pattern1, pattern0):
-        complexity_2_tp -= 0.05
-    if np.array_equal(pattern1, pattern0[::-1]):
-        complexity_2_tp -= 0.02
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp[nb_columns - middle:]):
-        complexity_2_tp -= 0.03
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp_reversed[nb_columns - middle:]):
-        complexity_2_tp -= 0.03
 
-    for k in range(nb_columns):
-        complexity_2_tp += base_elements_complexity[pattern0[k]][pattern1[k]]
-
-    return complexity_2_tp
+def increment_array(sample,j,i, map, nb_columns ):
+    sample.pop(0)
+    t = map[:,2]
+    column = map[:,0]
+    sample.append(np.array([0 for k in range(nb_columns + 50 * (nb_columns - 1))]))
+    tc = t[0] + j * TF_time_scale
+    while  i < len(map) and t[i] <= tc :
+        sample[sample_size-1][column[i]*50] = 1
+        i +=1
+    j += 1
+    return(sample,j,i)
 
 
-def compression_correction(l1, l0):
-    x = l1 / l0
-    return x ** 2 / (1 + x ** 4)
 
+def calc_complexity(map, nb_columns):
+    (sample,j,i) = create_array(map, nb_columns)
+    a_sample = np.array(sample)
 
-def correlation_correction(pattern):
-    return 1
-
-
-def noeud_i(i, i_to_j, patterns, columns):
-    j = i_to_j(i)
-    nb_columns = len(patterns[0])
-    noeud = [patterns[0]]
-    for k in range(nb_columns):
-        if patterns[j - 1][k+1] != 0:
-            noeud.append([k - columns[i],[j-1,k]])
-    return noeud
-
-
-def calc_complexity(map, i_to_j, patterns, columns):
-    global_complexity = [1]
-    complexity_patterns = [0]
-    complexity_patterns.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
-    global_complexity.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
-    for j in range(2, i_to_j[len(columns) - 1] + 1):
-        complexity_patterns.append(calc_complexity_2_tp(patterns[j, 1:], patterns[j - 1, 1:]))
-        l0 = patterns[j][0]
-        complexity = 0
-        j_cor = j - 1
-        dist = l0
-        while dist < 5 * l0 and j_cor > 0:
-            compression = compression_correction(patterns[j][0], patterns[j_cor][0])
-            correlation = correlation_correction(patterns[j], patterns[j_cor])
-            complexity += complexity * complexity_patterns[j] * 1
-            global_complexity.append((1 + complexity_patterns[j]) * (1 + compression * (global_complexity[j - 1] - 1)))
-    global_complexity_i = []
-    for i in range(len(i_to_j)):
-        global_complexity_i.append(global_complexity[i_to_j[i]])
-    return np.array(global_complexity_i)
+    t = map[:,0]
+    while tc < t[len(t)-1]+TF_time_scale*sample_size :
+        a_sample = np.array(sample)
+        fft_sample = abs(np.fft.rfft2(a_sample))
+        cmap = plt.get_cmap('PiYG')
+        if j%1000 == 0 :
+            plt.pcolormesh(fft_sample)
+            plt.show()
+        (sample,j,i)=increment_array(sample,j,i,map,nb_columns)
+        tc = t[0] + j * TF_time_scale

@@ -28,9 +28,11 @@ for element in os.listdir(folder_path):
     (kps, left_i, right_i) = calc_kps(map, nb_columns)
 
     felt_kps = [0 for i in range(len(map))]
+    '''
     felt_kps = calc_felt_kps_stamina(map, left_i, kps, felt_kps)
     felt_kps = calc_felt_kps_stamina(map, right_i, kps, felt_kps)
-
+    '''
+    calc_complexity(map, nb_columns)
     overall_difficulty = np.mean(np.array(felt_kps))
     mean_kps = np.mean(np.array(kps))
     g.write(name)
@@ -42,5 +44,5 @@ for element in os.listdir(folder_path):
         mean_kps) + '; name = ' + name + '; nb_note = ' + str(
         len(map)) + '; calc_time = ' + str(
         time.time() - t0) + '; nb_columns = ' + str(nb_columns) + '; true_nb =' + str(true_nb_columns))
-
+plt.show()
 g.close()

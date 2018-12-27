@@ -24,10 +24,11 @@ def calc_next_felt_kps(kps, t, felt_kps, list_i, i ):  # searching to maximize f
     kps_min = kps[list_i[i]]
     kps_mean = kps[list_i[i]]
     current_felt_kps = kps[list_i[i]]
+    felt_kps[list_i[i]]=kps_min
     felt_kps_max = 0
     while j > 0 and (G(kps_min, t[list_i[i]] - t[0]) + 1) * kps_min > felt_kps_max:
         Delta_t = t[list_i[j]] - t[list_i[j - 1]]
-        kps_mean = kps_mean + (felt_kps[j] - kps_mean) * Delta_t / tau_kps_mean
+        kps_mean = kps_mean + (felt_kps[list_i[j]] - kps_mean) * Delta_t / tau_kps_mean
         if kps_mean < kps_min:
             if kps_mean < 0:
                 kps_min = 0

@@ -104,9 +104,10 @@ def calc_kps(map,nb_columns):
             count_r += 1
             if count_r >= 3:
                 kps[right_i[count_r-2]] = next_kps(right_i,count_r,map)
-
-    kps[left_i[count_l-1]] = last_kps(left_i,count_l, map)
-    kps[right_i[count_r-1]] = last_kps(right_i,count_r, map)
+    if count_l>3:
+        kps[left_i[count_l-1]] = last_kps(left_i,count_l, map)
+    if count_r>3:
+        kps[right_i[count_r-1]] = last_kps(right_i,count_r, map)
 
     return (kps,left_i,right_i)
 
