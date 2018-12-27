@@ -42,7 +42,7 @@ for element in os.listdir(folder_path):
     for i in range(1, len(map)):
         while tt[j] < map[i, 2]:
             j += 1
-        complexity2.append(complexity[j] / kps[i])
+        complexity2.append(complexity[j])
 
     overall_difficulty = np.mean(np.array(complexity2)*np.array(felt_kps))
     g.write(name)
@@ -57,5 +57,4 @@ for element in os.listdir(folder_path):
         len(map)) + '; calc_time = ' + str(
         time.time() - t0) + '; nb_columns = ' + str(nb_columns) + '; true_nb =' + str(true_nb_columns))
 
-    plt.show()
 g.close()
