@@ -8,7 +8,7 @@ import glob
 Extracting all info from .osu file
 Structure of map :: list of [column_id, type_note, timing_point]
 
-column_id ordered by left to right from 0 to nb_column
+column_id ordered by left to right from 0 to nb_column-1
 type_note == 0 normal, 1 LN hold, 2 LN release
 
 timing_point are in ms there !!!
