@@ -44,13 +44,14 @@ for element in os.listdir(folder_path):
             j += 1
         complexity2.append(complexity[j] / kps[i])
 
-    overall_difficulty = np.array(complexity2)*felt_kps
+    overall_difficulty = np.mean(np.array(complexity2)*np.array(felt_kps))
     g.write(name)
     g.write(';' + str(nb_columns))
     g.write(';' + str(true_nb_columns))
     g.write(';' + str(mean_kps))
     g.write(';' + str(mean_felt_kps))
     g.write(';' + str(mean_complexity))
+    g.write(';' + str(overall_difficulty))
     print('dif = ' + str(overall_difficulty) + '; mean_complexity ='+ str(mean_complexity)  + '; mean_kps = ' + str(
         mean_kps) + '; name = ' + name + '; nb_note = ' + str(
         len(map)) + '; calc_time = ' + str(
