@@ -28,22 +28,33 @@ for element in os.listdir(folder_path):
     (kps, left_i, right_i) = calc_kps(map, nb_columns)
 
     felt_kps = [0 for i in range(len(map))]
-    '''
+
     felt_kps = calc_felt_kps_stamina(map, left_i, kps, felt_kps)
     felt_kps = calc_felt_kps_stamina(map, right_i, kps, felt_kps)
-    '''
-    complexity = calc_complexity(map, nb_columns)
-    overall_difficulty = np.mean(np.array(felt_kps))
+
+    (complexity,tt) = calc_complexity(map, nb_columns)
+
+    mean_felt_kps = np.mean(np.array(felt_kps))
     mean_kps = np.mean(np.array(kps))
+    mean_complexity = np.mean(np.array(complexity))
+    complexity2 = [0]
+    j = 0
+    for i in range(1, len(map)):
+        while tt[j] < map[i, 2]:
+            j += 1
+        complexity2.append(complexity[j] / kps[i])
+
+    overall_difficulty = np.array(complexity2)*felt_kps
     g.write(name)
     g.write(';' + str(nb_columns))
     g.write(';' + str(true_nb_columns))
     g.write(';' + str(mean_kps))
-    g.write(';' + str(overall_difficulty) + '\n')
-    print('dif = ' + str(overall_difficulty) + '; mean_complexity ='  + '; mean_kps = ' + str(
+    g.write(';' + str(mean_felt_kps))
+    g.write(';' + str(mean_complexity))
+    print('dif = ' + str(overall_difficulty) + '; mean_complexity ='+ str(mean_complexity)  + '; mean_kps = ' + str(
         mean_kps) + '; name = ' + name + '; nb_note = ' + str(
         len(map)) + '; calc_time = ' + str(
         time.time() - t0) + '; nb_columns = ' + str(nb_columns) + '; true_nb =' + str(true_nb_columns))
-    plt.plot(complexity)
+
     plt.show()
 g.close()

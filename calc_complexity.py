@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
-TF_time_scale = 1
-sample_size = 1000
+TF_time_scale = 5
+sample_size = 400
 space_btw_columns = 10
 
 def create_array(map,nb_columns):
@@ -47,6 +47,7 @@ def calc_complexity(map, nb_columns):
     complexity=[]
     t = map[:,2]
     tc = t[0] + j * TF_time_scale
+    tt =[]
     print(t[len(t)-1])
     while tc < t[len(t)-1]+TF_time_scale*sample_size :
         a_sample = np.array(sample)
@@ -59,5 +60,6 @@ def calc_complexity(map, nb_columns):
             plt.show()
         '''
         (sample,j,i)=increment_array(sample,j,i,map,nb_columns)
+        tt.append(tc - TF_time_scale * sample_size / 2)
         tc = t[0] + j * TF_time_scale
-    return(complexity)
+    return(complexity,tt)
