@@ -7,7 +7,7 @@ Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
 '''
 
 TF_time_scale = 1
-sample_size = 2000
+sample_size = 1000
 space_btw_columns = 10
 
 def create_array(map,nb_columns):
@@ -45,16 +45,19 @@ def calc_complexity(map, nb_columns):
     (sample,j,i) = create_array(map, nb_columns)
     a_sample = np.array(sample)
     complexity=[]
-    t = map[:,0]
+    t = map[:,2]
     tc = t[0] + j * TF_time_scale
+    print(t[len(t)-1])
     while tc < t[len(t)-1]+TF_time_scale*sample_size :
         a_sample = np.array(sample)
         fft_sample = abs(np.fft.rfft2(a_sample))
-        complexity.append(np.sum(fft_sample)/np.sum(a_sample))
+        complexity.append(np.sum(fft_sample))
         cmap = plt.get_cmap('PiYG')
-        if j == 1000 :
+        '''
+        if j % 10000 == 0 :
             plt.pcolormesh(fft_sample)
             plt.show()
+        '''
         (sample,j,i)=increment_array(sample,j,i,map,nb_columns)
         tc = t[0] + j * TF_time_scale
     return(complexity)
