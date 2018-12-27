@@ -25,17 +25,18 @@ for element in os.listdir(folder_path):
     name = element
     (map, nb_columns, true_nb_columns) = extract_info(file_path)
     map=delete_LN_release(map)
-    kps = calc_kps(map, nb_columns)
+    (kps, left_i, right_i) = calc_kps(map, nb_columns)
 
-    '''
-    felt_kps_columns = columns_of_lin(felt_kps, columns, nb_columns)
-    felt_kps = calc_felt_kps_stamina(map, i_columns, felt_kps_columns)
-    '''
-    overall_difficulty = np.mean(np.array(kps))
+    felt_kps = [0 for i in range(len(map))]
+    felt_kps = calc_felt_kps_stamina(map, left_i, kps, felt_kps)
+    felt_kps = calc_felt_kps_stamina(map, right_i, kps, felt_kps)
+
+    overall_difficulty = np.mean(np.array(felt_kps))
     mean_kps = np.mean(np.array(kps))
     g.write(name)
     g.write(';' + str(nb_columns))
     g.write(';' + str(true_nb_columns))
+    g.write(';' + str(mean_kps))
     g.write(';' + str(overall_difficulty) + '\n')
     print('dif = ' + str(overall_difficulty) + '; mean_complexity ='  + '; mean_kps = ' + str(
         mean_kps) + '; name = ' + name + '; nb_note = ' + str(

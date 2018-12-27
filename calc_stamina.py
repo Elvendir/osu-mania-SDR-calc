@@ -19,50 +19,38 @@ def G(kps, t):  # ideal reward for constant kps
     return (np.log(x + 1) - np.log(x + 1) * np.exp(-x ** 2 * dif_kps ** 4)) / norm
 
 
-def calc_next_felt_kps(kps, t, felt_kps, list_i,
-                       i):  # searching to maximize felt_kps with decreasing kps backward im time
+def calc_next_felt_kps(kps, t, felt_kps, list_i, i ):  # searching to maximize felt_kps with decreasing kps backward im time
     j = i
-    j_max = list_i[j - 1]
-    kps_min = kps[i]
-    kps_mean = kps[i]
-    felt_kps.append(kps[i])
-    current_felt_kps = kps[i]
+    kps_min = kps[list_i[i]]
+    kps_mean = kps[list_i[i]]
+    current_felt_kps = kps[list_i[i]]
     felt_kps_max = 0
-    while list_i[j - 1] > 0 and (G(kps_min, t[i] - t[0]) + 1) * kps_min > felt_kps_max:
-        Delta_t = t[j] - t[list_i[j - 1]]
+    while j > 0 and (G(kps_min, t[list_i[i]] - t[0]) + 1) * kps_min > felt_kps_max:
+        Delta_t = t[list_i[j]] - t[list_i[j - 1]]
         kps_mean = kps_mean + (felt_kps[j] - kps_mean) * Delta_t / tau_kps_mean
         if kps_mean < kps_min:
             if kps_mean < 0:
                 kps_min = 0
             else:
                 kps_min = kps_mean
-        j = list_i[j - 1]
-        G_ = G(kps_min, t[i] - t[j])
+        j -= 1
+        G_ = G(kps_min, t[list_i[i]] - t[list_i[j]])
         current_felt_kps = (1 + G_) * kps_min
         if current_felt_kps >= felt_kps_max:
             felt_kps_max = current_felt_kps
-    trashh = felt_kps.pop()
     return felt_kps_max
 
 
-def calc_felt_kps_stamina(map, i_columns, kps_columns):
+def calc_felt_kps_stamina(map, list_i, kps, felt_kps):
     t = map[:, 2] / 1000
     '''
     Time now in seconds !!!
     '''
     columns = map[:, 0]
-    felt_kps = [0]
-    nb_columns = len(i_columns[0])
 
-    for i in range(1, len(map)):  # calculate felt_kps > kps because of stamina
-        column = columns[i]
-        if i_columns[i - 1][column] == -1:
-            felt_kps.append(0)
-            # if first note of the column felt_kps == 0
-        else:
-            current_felt_kps = calc_next_felt_kps(np.array(kps_columns)[:, column], t, felt_kps,
-                                                  np.array(i_columns)[:, column], i)
-            felt_kps.append(current_felt_kps)
+    for i in range(1, len(list_i)):  # calculate felt_kps > kps because of stamina
+        current_felt_kps = calc_next_felt_kps(np.array(kps), t, felt_kps, np.array(list_i), i)
+        felt_kps[list_i[i]] = current_felt_kps
     return np.array(felt_kps)
 
 '''

@@ -43,15 +43,20 @@ def last_trill_kps_calc(t,kps2,cut_point):
     return max(0,kpsA *(1 - t/cut_point ) )
 
 
-def next_kps(last_i,map):
+def next_kps(i,count,map):
+
     column = map[:,0]
     t = map[:,2]
-    t1t2 = t[last_i[1]]-t[last_i[2]]
-    t0t2 = t[last_i[0]]-t[last_i[2]]
-    t2t3 = max(kps_cap,t[last_i[2]]-t[last_i[3]])
-    cut_point = min(0.5, t2t3/t0t2)
+    t1t2 = t[i[count-2]]-t[i[count-3]]
+    t0t2 = t[i[count-1]]-t[i[count-3]]
+    if count == 3 :
+        cut_point = 0.5
+        t2t3 = 99999999999
+    else:
+        t2t3 = max(kps_cap, t[i[count - 3]] - t[i[count - 4]])
+        cut_point = min(0.5, t2t3 / t0t2)
 
-    if column[last_i[1]] == column[last_i[2]]:
+    if column[i[count-2]] == column[i[count-3]]:
         kps = 1000/t1t2
     elif t1t2 == 0 :
         kps = 1000/t2t3
@@ -61,13 +66,13 @@ def next_kps(last_i,map):
         kps = trill_kps_calc(t1t2,t0t2,1000/t0t2,1000/t2t3,cut_point)
     return(kps)
 
-def last_kps(last_i,map):
+def last_kps(i,count,map):
     column = map[:,0]
     t = map[:,2]
-    t0t1 = t[last_i[0]]-t[last_i[1]]
-    t1t2 = t[last_i[1]]-t[last_i[2]]
+    t0t1 = t[i[count-1]]-t[i[count-2]]
+    t1t2 = t[i[count-2]]-t[i[count-3]]
 
-    if column[last_i[0]] == column[last_i[1]]:
+    if column[i[count-1]] == column[i[count-2]]:
         kps = 1000/t0t1
     elif t1t2 == 0 :
         kps = 1000/t0t1
@@ -80,38 +85,30 @@ def last_kps(last_i,map):
 def calc_kps(map,nb_columns):
     columns = map[:, 0]
     kps = [0 for i in range(len(map))]
-    last_left_i=[-1,-1,-1,-1]
+    left_i=[]
     count_l =0
-    last_right_i=[-1,-1,-1,-1]
+    right_i=[]
     count_r = 0
 
     for i in range(0, len(map)):
         column = columns[i]
         if column < nb_columns/2 :
-            last_left_i[3] = last_left_i[2]
-            last_left_i[2] = last_left_i[1]
-            last_left_i[1] = last_left_i[0]
-            last_left_i[0] = i
+            left_i.append(i)
             count_l += 1
             if count_l >= 3:
-                kps[last_left_i[1]] = next_kps(last_left_i,map)
+                kps[left_i[count_l-2]] = next_kps(left_i,count_l,map)
 
 
         else :
-            last_right_i[3] = last_right_i[2]
-            last_right_i[2] = last_right_i[1]
-            last_right_i[1] = last_right_i[0]
-            last_right_i[0] = i
+            right_i.append(i)
             count_r += 1
             if count_r >= 3:
-                kps[last_right_i[1]] = next_kps(last_right_i,map)
+                kps[right_i[count_r-2]] = next_kps(right_i,count_r,map)
 
-    kps[last_right_i[0]] = last_kps(last_left_i, map)
-    kps[last_right_i[0]] = last_kps(last_right_i, map)
+    kps[left_i[count_l-1]] = last_kps(left_i,count_l, map)
+    kps[right_i[count_r-1]] = last_kps(right_i,count_r, map)
 
-    return kps
-
-
+    return (kps,left_i,right_i)
 
 
 def calc_overall_difficulty(individual_difficulty, kps):  # root mean square of ind_difficulty*kps^2
