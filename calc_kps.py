@@ -34,7 +34,7 @@ LN_note_after_release_correction = 150  # kps correction for note after LN relea
 kps_cap = 50  # cap kps by fixing minimal amount time between two notes before the half trill
 
 main_trill_coef = 1.4
-border_trill_coef_bot = 0.8
+border_trill_coef_bot = 0.5
 border_trill_coef_top = 1.
 
 

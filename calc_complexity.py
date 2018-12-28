@@ -16,7 +16,7 @@ TF_time_scale = 1  # Length in ms of a pixel of the sample
 sample_size = 2000  # Number of pixel for sample length
 note_placement = 999  # Placement of the note (for which complexity is calculated) inside the sample
 # (0 will put it at the bottom of the sample and sample_size - 1 will put it at the top )
-space_btw_columns = 10  # Pixels of void between each columns for a more precise FFT
+space_btw_columns = 30  # Pixels of void between each columns for a more precise FFT
 
 
 def create_array(map, nb_columns):  # Creates the first sample
@@ -57,7 +57,6 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
     delta_j = 0
     last_j = 0
     complexity = []
-    base_complexity_l = []
     t = map[:, 2]
     nb_notes = len(t)
 
@@ -67,11 +66,9 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
     fft_sample = abs(np.fft.rfft2(a_sample))
     for k in range(i):  # Add a complexity for each note on same timeline
         base_complexity = np.sum(fft_sample)
-        next_complexity = base_complexity - np.sum(fft_sample[:, 0]) - np.sum(fft_sample[0, :])
+        next_complexity = base_complexity - np.sum(fft_sample[0, 0])
         next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
-        base_complexity = base_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
 
-        base_complexity_l.append(base_complexity)
         complexity.append(next_complexity)
         # Currently complexity is just the sum of the absolute value of FFT' s coefficients
 
@@ -91,9 +88,7 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
             base_complexity = np.sum(abs_fft_sample)
             next_complexity = base_complexity - np.sum(abs_fft_sample[0, :]) + abs_fft_sample[0, 0]
             next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
-            base_complexity = base_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
 
-            base_complexity_l.append(base_complexity)
             complexity.append(next_complexity)
         '''
         # Uncomment to have a FFT visualisation every 10000*TF_time_scale  of the map
