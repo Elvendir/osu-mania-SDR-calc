@@ -17,7 +17,7 @@ import lot_of_graphs as graph
 Calculates difficulty for each .osu file in folder_path.
 Writes all lot of things in a DATA file.
 
-I'm trying to keep this as commented as possible.
+I'm trying to keep this as much commented as possible.
 Information on each calculation can be found in their respective files.
 
 How this works :
