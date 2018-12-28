@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.colors as col
+import sys
 import matplotlib.pyplot as plt
 
 '''
@@ -50,7 +50,7 @@ def increment_array(sample,j,i, map, nb_columns ):
 def calc_complexity(map, nb_columns):
     complexity=[]
     t = map[:,2]
-
+    nb_notes = len(t)
 
 
     (sample,j,i) = create_array(map, nb_columns)
@@ -60,6 +60,9 @@ def calc_complexity(map, nb_columns):
         complexity.append(np.sum(fft_sample))
 
     while i < len(map) :
+        if i % 100 == 0 :
+            sys.stdout.write("\r calc_complexity : " +str("%.0f" % (100*i/nb_notes)) + "%" )
+            sys.stdout.flush()
         (sample,j,i, nb_note)=increment_array(sample,j,i,map,nb_columns)
         a_sample = np.array(sample)
         fft_sample = abs(np.fft.rfft2(a_sample))
