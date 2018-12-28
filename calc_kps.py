@@ -25,6 +25,7 @@ In the calculation :
  c_3 = main_trill_coef
  F = trill_kps_calc  is two half linear function with the the previous conditions.
 
+(To see a visualisation of F uncomment in main.py the graph section)
  '''
 
 LN_release_kps_correction = 70  # kps correction for LN release
@@ -44,16 +45,16 @@ def trill_kps_calc(t, d, kps0, kps2, cut_point):
     kpsA = border_trill_coef_bot * kps2
     if t / d > cut_point:
 
-        return 2 * (1 - main_trill_coef) * (1 - t / d) * kpsB + kpsB
+        return 2 * (1 - main_trill_coef) * (- 1 + t / d) * kpsB + kpsB
     else:
-        nice = 2 * (1 - main_trill_coef) * kpsB * (1 - cut_point) + kpsB
+        nice = 2 * (1 - main_trill_coef) * kpsB * (- 1 + cut_point) + kpsB
         return kpsA + t / d / cut_point * (nice - kpsA)
 
 
 # Same as previous one but for the last note (because there is not a next_note)
 def last_trill_kps_calc(t, kps2, cut_point):
     kpsA = border_trill_coef_bot * kps2
-    return max(0, kpsA * (1 - t / cut_point))
+    return max(0, kpsA * (- 1 + t / cut_point))
 
 
 # Does the kps calculation for a note depending on jack or half trill

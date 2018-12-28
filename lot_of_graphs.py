@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from calc_stamina import G as func_G
+from calc_kps import trill_kps_calc as trill
 
 
 def tab_k(tab, list_i):
@@ -58,3 +59,13 @@ def G():
     t = np.linspace(0, 60, 2000)
     for k in range(10):
         plt.plot(t, func_G(k, t))
+
+
+def F():
+    plt.figure()
+    plt.title("F depending on placement of the note inside the trill \n with kps_previous = kps_next")
+    t = np.linspace(0, 1, 1000)
+    f = []
+    for i in t:
+        f.append(trill(i, 1, 1, 1, 0.5))
+    plt.plot(t, f)
