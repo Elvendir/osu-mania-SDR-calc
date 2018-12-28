@@ -3,7 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 
 '''
-An FFT (Discret Fourier Transform) is done on a sample of the map.
+A FFT (Discret Fourier Transform) is done on a sample of the map.
 
 Sample_lenght : sample_size in number and sample_size*TF_time_scale in ms
 Sample_width : nb_columns + space_btw_columns*(nb_columns-1)

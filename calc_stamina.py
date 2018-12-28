@@ -15,11 +15,11 @@ Thus, G is here the ideal reward function at constant kps : G(kps,t) (depends on
 And we maximise : G(min_kps,Delta_t) * min_kps : 
 with min_kps a decreasing backward in time  from the note which stamina is calculated
     (exponential decay across all kps encountered)
-and Delta_t  the time between the note and where tha calculation is backward in time 
+and Delta_t  the time between the note and where the calculation is backward in time 
 
 (To see a visualisation of G uncomment in main.py the graph section)
 
-All the constant below can be change to change the way stamina is rewarded. 
+All the constant below can be changed to change the way stamina is rewarded. 
 '''
 
 kps_target = 5  # kps fixed for behavior of ideal reward function at constant kps : G
