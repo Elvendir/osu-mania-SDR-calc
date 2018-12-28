@@ -54,6 +54,7 @@ def increment_array(sample, j, i, map, nb_columns):  # Creates next sample
 
 
 def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all notes
+    delta_i = 100
     delta_j = 0
     last_j = 0
     complexity = []
@@ -75,7 +76,9 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
     while i < len(map):
 
         # A progress bar for the calculation
-        if i % 100 == 0:
+        delta_i += 1
+        if delta_i > 100:
+            delta_i = 0
             sys.stdout.write("\r calc_complexity : " + str("%.0f" % (100 * i / nb_notes)) + "%")
             sys.stdout.flush()
 

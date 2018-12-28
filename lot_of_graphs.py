@@ -63,7 +63,7 @@ def G():
 
 def F():
     plt.figure()
-    plt.title("F depending on placement of the note inside the trill \n with kps_previous = kps_next")
+    plt.title("F depending on placement of the note inside the trill \n with kps_previous = kps_next = 1")
     t = np.linspace(0, 1, 1000)
     f = []
     for i in t:
