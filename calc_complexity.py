@@ -54,7 +54,10 @@ def increment_array(sample, j, i, map, nb_columns):  # Creates next sample
 
 
 def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all notes
+    delta_j = 0
+    last_j = 0
     complexity = []
+    base_complexity_l = []
     t = map[:, 2]
     nb_notes = len(t)
 
@@ -63,7 +66,13 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
     a_sample = np.array(sample)
     fft_sample = abs(np.fft.rfft2(a_sample))
     for k in range(i):  # Add a complexity for each note on same timeline
-        complexity.append(np.sum(fft_sample))
+        base_complexity = np.sum(fft_sample)
+        next_complexity = base_complexity - np.sum(fft_sample[:, 0]) - np.sum(fft_sample[0, :])
+        next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
+        base_complexity = base_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
+
+        base_complexity_l.append(base_complexity)
+        complexity.append(next_complexity)
         # Currently complexity is just the sum of the absolute value of FFT' s coefficients
 
     while i < len(map):
@@ -76,16 +85,24 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
         (sample, j, i, nb_note) = increment_array(sample, j, i, map, nb_columns)
 
         a_sample = np.array(sample)
-        fft_sample = abs(np.fft.rfft2(a_sample))
+        fft_sample = np.fft.rfft2(a_sample)
+        abs_fft_sample = abs(fft_sample)
         for k in range(nb_note):
-            complexity.append(np.sum(fft_sample))
+            base_complexity = np.sum(abs_fft_sample)
+            next_complexity = base_complexity - np.sum(abs_fft_sample[0, :]) + abs_fft_sample[0, 0]
+            next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
+            base_complexity = base_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
 
-        # Uncomment to have a FFT visualisation every 10000*TF_time_scale  of the map
+            base_complexity_l.append(base_complexity)
+            complexity.append(next_complexity)
         '''
-        if j % 10000 == 0 :
+        # Uncomment to have a FFT visualisation every 10000*TF_time_scale  of the map
+        delta_j = - last_j + j
+        if delta_j > 10000 :
+            last_j = j
             tc = t[0] + (j + note_placement) * TF_time_scale
-            plt.pcolormesh(fft_sample)
-            plt.title("FFT at " + str("%.3f" % (tc/1000) + "s into the song.")
+            plt.plot(fft_sample[:,0])
+            plt.title("FFT at " + str("%.3f" % (tc/1000) + "s into the song."))
             plt.show()
         '''
     return complexity

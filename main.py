@@ -13,7 +13,6 @@ from calc_complexity import calc_complexity
 
 import lot_of_graphs as graph
 
-
 '''
 Calculates difficulty for each .osu file in folder_path.
 Writes all lot of things in a DATA file.
@@ -59,18 +58,21 @@ for element in os.listdir(folder_path):
     (kps, left_i, right_i) = calc_kps(map, nb_columns)
 
     felt_kps = [0 for i in range(len(map))]
-
+    
     felt_kps = calc_felt_kps(map, left_i, kps, felt_kps, 0)
     felt_kps = calc_felt_kps(map, right_i, kps, felt_kps, len(left_i))
 
     complexity = calc_complexity(map, nb_columns)
+
+    (m, b) = np.polyfit(kps, complexity, 1)
+    complexity = complexity - np.array(kps) * m
 
     mean_kps = np.mean(np.array(kps))
     mean_felt_kps = np.mean(np.array(felt_kps))
     mean_complexity = np.mean(np.array(complexity))
 
     # Current calculation of overall_difficulties is a multiplication
-    overall_difficulty = np.mean(np.array(complexity) * np.array(felt_kps))
+    overall_difficulty = np.mean(np.array(complexity) * np.array(kps))
 
     # Writes information into the file
     # (if there is a difference between nb_columns and true_nb_columns the map isn't well encoded)
@@ -87,13 +89,12 @@ for element in os.listdir(folder_path):
     # Writes information in the terminal
     print('dif = ' + str("%.2f" % overall_difficulty)
           + '; m_c =' + str("%.2f" % mean_complexity)
-          + '; m_f_kps = ' + str("%.2f" % mean_felt_kps)
           + '; m_kps = ' + str("%.2f" % mean_kps)
           + '; calc_t = ' + str("%.2f" % (time.time() - t0))
-          + '; name = ' + name
-          + '; nb_note = ' + str(len(map))
-          + '; nb_columns = ' + str(nb_columns)
-          + '; true_nb =' + str(true_nb_columns))
+          + '; name = ' + name + '; nb_note = '
+          + str(len(map)) + '; nb_columns = '
+          + str(nb_columns) + '; true_nb ='
+          + str(true_nb_columns))
     sys.stdout.flush()
 
     '''
@@ -107,12 +108,12 @@ for element in os.listdir(folder_path):
     
     (For FFT graphs see the calc_complexity.py file)
     '''
-    #graph.complexity(map[:, 2], complexity)
-    #graph.kps_felt_minus_kps(left_i, right_i, kps, felt_kps, map[:, 2])
-    #graph.kps_VS_complexity(kps, complexity)
-    #graph.kps_VS_kps_felt(kps, felt_kps)
-    #graph.G()
-    graph.F()
+    # graph.complexity(map[:, 2], complexity)
+    # graph.kps_felt_minus_kps(left_i, right_i, kps, felt_kps, map[:, 2])
+    # graph.kps_VS_complexity(kps, complexity)
+    # graph.kps_VS_kps_felt(kps, felt_kps)
+    # graph.G()
+    # graph.F()
 
     plt.show()
 
