@@ -7,6 +7,8 @@ import glob
 '''
 Extracting all info from .osu file
 Structure of map :: list of [column_id, type_note, timing_point]
+map is order by increasing timing_point
+
 
 column_id ordered by left to right from 0 to nb_column-1
 type_note == 0 normal, 1 LN hold, 2 LN release
@@ -22,6 +24,8 @@ def extract_info(file_path):
     b1 = False
     map = []
     columns = []
+
+    # Puts all relevant information in map
     while rd:
         b2 = False
         if b1:
@@ -43,6 +47,8 @@ def extract_info(file_path):
             true_nb_column = int(rd.split(':')[1])
         rd = f.readline()
     columns.sort()
+
+    # Renames columns from 0 to nb_columns-1
     for k in range(len(map)):  # rewriting column_id
         i = 0
         for column in columns:
@@ -50,6 +56,8 @@ def extract_info(file_path):
                 map[k] = (i, map[k][1], map[k][2])
             i += 1
     f.close()
+
+    # Sorts the map
     dtype = [('column', int), ('type', int), ('timing', int)]
     map = np.array(map, dtype=dtype)
     map = np.sort(map, order='timing', kind='mergesort')
@@ -57,4 +65,5 @@ def extract_info(file_path):
     for i in range(len(map)):
         map_array.append([map[i][0], map[i][1], map[i][2]])
     map_array = np.array(map_array)
-    return (map_array, len(columns), true_nb_column)
+
+    return map_array, len(columns), true_nb_column

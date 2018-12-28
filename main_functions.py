@@ -1,9 +1,14 @@
 import numpy as np
 
+'''
+Useful functions
+'''
+
+
 power_kps = 2  # overall_difficulty power dependency on kps
 
 
-def delete_LN_release(map):
+def delete_LN_release(map):     # Deletes all LN's release
     k=0
     i=0
     n = len(map)
@@ -16,7 +21,7 @@ def delete_LN_release(map):
     return(map)
 
 
-def rms(list, k):  # gives the root mean square of a np.array
+def rms(list, k):  # gives the k-root mean square of a np.array
     return pow(np.mean(list ** k), 1 / k)
 
 def calc_overall_difficulty(individual_difficulty, kps):  # root mean square of ind_difficulty*kps^2
