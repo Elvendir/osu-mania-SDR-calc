@@ -63,9 +63,10 @@ def G():
 
 def F():
     plt.figure()
-    plt.title("F depending on placement of the note inside the trill \n with kps_previous = kps_next = 1")
-    t = np.linspace(0, 1, 1000)
+    plt.title("F depending on placement of the note inside the trill "
+              "\n with kps_previous = kps_next = 1 in a 01'01'10'01 pattern")
+    t = np.linspace(0, 1, 10000)
     f = []
     for i in t:
-        f.append(trill(i, 1, 1, 1, 0.5))
+        f.append(trill(1, i, 1, False))
     plt.plot(t, f)

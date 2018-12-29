@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 '''
 The aim is to give each note an individual kps.
 First, kps is calculate for each hand independently .
@@ -20,9 +23,9 @@ The other interesting value is : F(kps,t,t) = c_3 / (2*t) when there is a perfec
  with c_3 a constant >= 1 that rewards the trill.
 
 In the calculation :
- c_1 = border_trill_coef_bot
- c_2 = border_trill_coef_top
- c_3 = main_trill_coef
+ c_1 = 1 (because at least one of a double need to have a full_weight)
+ c_2 = mash_coef
+ c_3 = trill_coef
  F = trill_kps_calc  is two half linear function with the the previous conditions.
 
 (To see a visualisation of F uncomment in main.py the graph section)
@@ -31,80 +34,79 @@ In the calculation :
 LN_release_kps_correction = 70  # kps correction for LN release
 LN_note_after_release_correction = 150  # kps correction for note after LN release
 
-kps_cap = 50  # cap kps by fixing minimal amount time between two notes before the half trill
+tau_mash = 0.1  # size in seconds of the mash zone
 
-main_trill_coef = 1.4
-border_trill_coef_bot = 0.5
-border_trill_coef_top = 1.
+trill_coef = 0.7  # factor of reduction of the trill kps
+tau_kps_trill = 2  # typical kps at which the kps of the previous is taken into account
 
+mash_coef = 0.5  # factor of reduction for second note at the same time (will later be a function of the previous_kps)
+
+
+# useful functions to calculated trill_kps
+def variable_trill_coef(kps):
+    if kps == 0 :
+        return trill_coef
+    else :
+        return trill_coef - np.exp(-tau_kps_trill / kps) * (trill_coef - 1)
+
+
+def calc_trill_kps_has_trill(t1t2, t0t2, p):
+    return p * (1 / t1t2 - 1 / t0t2) + 1 / t0t2
+
+
+def calc_trill_kps_has_mash(t1t2, limit_trill_kps_has_trill, kps_previous):
+    m = limit_trill_kps_has_trill - kps_previous * mash_coef
+    return -m * np.sqrt(1 - (t1t2 / tau_mash)**2) + limit_trill_kps_has_trill
 
 # Calculates the kps of the last note of an half trill (it's F)
-# Currently it's only two half linear function with intro's conditions respected
-def trill_kps_calc(t, d, kps0, kps2, cut_point):
-    kpsB = border_trill_coef_top * kps0
-    kpsA = border_trill_coef_bot * kps2
-    if t / d > cut_point:
+# It's two half function : one for the trill part the other for the mashing (when near the previous note)
+def trill_kps_calc(t0t2, t1t2, t2t3, jack_limit):
+    kps_previous = 1 / t2t3
 
-        return 2 * (1 - main_trill_coef) * (- 1 + t / d) * kpsB + kpsB
+    # If column1 == column3 then at the limit when t2t3 = 0 it becomes a jack
+    if not jack_limit:
+        p = 2 * variable_trill_coef(0) - 1
     else:
-        nice = 2 * (1 - main_trill_coef) * kpsB * (- 1 + cut_point) + kpsB
-        return kpsA + t / d / cut_point * (nice - kpsA)
+        p = 2 * variable_trill_coef(kps_previous) - 1
 
+    trill_kps_has_trill = calc_trill_kps_has_trill(t1t2, t0t2, p)
 
-# Same as previous one but for the last note (because there is not a next_note)
-def last_trill_kps_calc(t, kps2, cut_point):
-    kpsA = border_trill_coef_bot * kps2
-    return max(0, kpsA * (- 1 + t / cut_point))
+    # Distinguish between mash and trill zone
+    if t1t2 < tau_mash:
+        trill_kps_has_mash = calc_trill_kps_has_mash(t1t2, calc_trill_kps_has_trill(tau_mash, t0t2, p), kps_previous)
+        return min(trill_kps_has_mash, trill_kps_has_trill)
+    else:
+        return trill_kps_has_trill
 
 
 # Does the kps calculation for a note depending on jack or half trill
-def next_kps(i, count, map):
+def next_kps(i, count, map, last):
     column = map[:, 0]
-    t = map[:, 2]
+    t = map[:, 2] / 1000
     t1t2 = t[i[count - 2]] - t[i[count - 3]]
-    t0t2 = t[i[count - 1]] - t[i[count - 3]]
-
-    # special case : first calculate note
-    if count == 3:
-        cut_point = 0.5
-        t2t3 = 99999999999
-    else:
-        t2t3 = max(kps_cap, t[i[count - 3]] - t[i[count - 4]])
-        cut_point = min(0.5, t2t3 / t0t2)
 
     # if jack
     if column[i[count - 2]] == column[i[count - 3]]:
-        kps = 1000 / t1t2
+        kps = 1 / t1t2
+        return kps
 
-    # if same timing than previous note
-    elif t1t2 == 0:
-        kps = 1000 / t2t3
-
-    # if previous note has same timing than the previous previous one
-    elif t2t3 == 0:
-        kps = 1000 / t1t2
-
-    # other cases
+    # special case : first calculate note
+    # jack limit is a bool saying if when t2t3 = 0 the note is a jack
+    if count == 3:
+        t2t3 = float("inf")
+        jack_limit = False
     else:
-        kps = trill_kps_calc(t1t2, t0t2, 1000 / t0t2, 1000 / t2t3, cut_point)
-    return (kps)
+        t2t3 = t[i[count - 3]] - t[i[count - 4]]
+        jack_limit = (column[i[count - 2]] == column[i[count - 4]])
 
-
-# Same as previous one but for the last note (because there is not a next_note)
-def last_kps(i, count, map):
-    column = map[:, 0]
-    t = map[:, 2]
-    t0t1 = t[i[count - 1]] - t[i[count - 2]]
-    t1t2 = t[i[count - 2]] - t[i[count - 3]]
-
-    if column[i[count - 1]] == column[i[count - 2]]:
-        kps = 1000 / t0t1
-    elif t1t2 == 0:
-        kps = 1000 / t0t1
+    # special case : last calculate note
+    if last :
+        t0t2 = float("inf")
     else:
-        kps = last_trill_kps_calc(t0t1, 1000 / t1t2, t1t2)
+        t0t2 = t[i[count - 1]] - t[i[count - 3]]
 
-    return (kps)
+    kps = trill_kps_calc(t0t2, t1t2, t2t3, jack_limit)
+    return kps
 
 
 # Does the kps calculation for both hand independently
@@ -115,6 +117,7 @@ def calc_kps(map, nb_columns):
     count_l = 0
     right_i = []
     count_r = 0
+    last = False
 
     for i in range(0, len(map)):
         column = columns[i]
@@ -124,19 +127,22 @@ def calc_kps(map, nb_columns):
             left_i.append(i)
             count_l += 1
             if count_l >= 3:
-                kps[left_i[count_l - 2]] = next_kps(left_i, count_l, map)
+                kps[left_i[count_l - 2]] = next_kps(left_i, count_l, map, last)
 
         # right hand calculation
         else:
             right_i.append(i)
             count_r += 1
             if count_r >= 3:
-                kps[right_i[count_r - 2]] = next_kps(right_i, count_r, map)
+                kps[right_i[count_r - 2]] = next_kps(right_i, count_r, map, last)
 
     # last note calculation
+    count_l += 1
+    count_r += 1
+    last = True
     if count_l > 3:
-        kps[left_i[count_l - 1]] = last_kps(left_i, count_l, map)
+        kps[left_i[count_l - 2]] = next_kps(left_i, count_l, map, last)
     if count_r > 3:
-        kps[right_i[count_r - 1]] = last_kps(right_i, count_r, map)
+        kps[right_i[count_r - 2]] = next_kps(right_i, count_r, map, last)
 
-    return (kps, left_i, right_i)
+    return kps, left_i, right_i
