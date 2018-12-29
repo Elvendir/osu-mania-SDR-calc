@@ -24,7 +24,7 @@ The other interesting value is : F(kps,t,t) = c_3 / (2*t) when there is a perfec
 
 In the calculation :
  c_1 = 1 (because at least one of a double need to have a full_weight)
- c_2 = mash_coef
+ c_2 = mash_coef(kps_previous)
  c_3 = trill_coef
  F = trill_kps_calc  is two half linear function with the the previous conditions.
 
@@ -39,24 +39,38 @@ tau_mash = 0.1  # size in seconds of the mash zone
 trill_coef = 0.7  # factor of reduction of the trill kps
 tau_kps_trill = 2  # typical kps at which the kps of the previous is taken into account
 
-mash_coef = 0.5  # factor of reduction for second note at the same time (will later be a function of the previous_kps)
+kps_ez = 6  # kps at which it's sure to have both note of a jump jack
+kps_hard = 12  # kps at which it's impossible to have both note of a jump jack
 
 
 # useful functions to calculated trill_kps
 def variable_trill_coef(kps):
-    if kps == 0 :
+    if kps == 0:
         return trill_coef
-    else :
+    else:
         return trill_coef - np.exp(-tau_kps_trill / kps) * (trill_coef - 1)
 
 
 def calc_trill_kps_has_trill(t1t2, t0t2, p):
     return p * (1 / t1t2 - 1 / t0t2) + 1 / t0t2
 
+def something(x):
+    return (np.cos(x*np.pi/2))**2
+
+
+def mash_coef(kps_previous):
+    if kps_previous < kps_ez:
+        return 0
+    elif kps_previous > kps_hard:
+        return 1
+    else:
+        return something(kps_previous / (kps_hard - kps_previous))
+
 
 def calc_trill_kps_has_mash(t1t2, limit_trill_kps_has_trill, kps_previous):
-    m = limit_trill_kps_has_trill - kps_previous * mash_coef
-    return -m * np.sqrt(1 - (t1t2 / tau_mash)**2) + limit_trill_kps_has_trill
+    m = limit_trill_kps_has_trill - kps_previous * mash_coef(kps_previous)
+    return -m * np.sqrt(1 - (t1t2 / tau_mash) ** 2) + limit_trill_kps_has_trill
+
 
 # Calculates the kps of the last note of an half trill (it's F)
 # It's two half function : one for the trill part the other for the mashing (when near the previous note)
@@ -100,7 +114,7 @@ def next_kps(i, count, map, last):
         jack_limit = (column[i[count - 2]] == column[i[count - 4]])
 
     # special case : last calculate note
-    if last :
+    if last:
         t0t2 = float("inf")
     else:
         t0t2 = t[i[count - 1]] - t[i[count - 3]]

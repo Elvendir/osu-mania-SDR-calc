@@ -114,7 +114,7 @@ for element in os.listdir(folder_path):
         #graph.kps_VS_complexity(kps, complexity)
         #graph.kps_VS_kps_felt(kps, felt_kps)
         #graph.G()
-        graph.F()
+        #graph.F()
 
         plt.show()
 
