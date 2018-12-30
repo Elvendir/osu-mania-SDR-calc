@@ -37,10 +37,10 @@ TO DO :
 - Tweak all constant (for stamina, complexity, kps)
 - Probably others things
 ...
-- Do a progressive calculation (make difficulty depends on player' s level)
+- Do a progressive calculation (make difficulty depends on player's level)
 '''
 
-g = codecs.open('DATAs', 'a+', 'utf-8')
+g = codecs.open('DATA', 'a+', 'utf-8')
 g.write('name;nb_column;true_nb_columns;calc_time;kps;felt_kps;complexity;overall_dif \r\n')
 
 print('Path of folder with .osu files')
