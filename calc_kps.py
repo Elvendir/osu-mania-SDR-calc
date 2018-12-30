@@ -28,7 +28,7 @@ In the calculation :
  c_3 = trill_coef
  F = trill_kps_calc  is two half linear function with the the previous conditions.
 
-(To see a visualisation of F uncomment in main.py the graph section)
+(To see a visualisation of F uncomment in main.py the graph section or try https://www.desmos.com/calculator/8pdbpj1u59)
  '''
 
 LN_release_kps_correction = 70  # kps correction for LN release
@@ -59,13 +59,25 @@ def quarter_ellipse(t, top, bottom):
 
 
 # definition of the variables coefficient
-def mash_coef(kps_previous):
-    if kps_previous < kps_ez:
+def calc_mash_kps(t1t2, kps_previous):
+    if t1t2 == 0:
+        if kps_previous == 0:
+            mash_kps = 0
+        else:
+            mash_kps = kps_previous
+    elif kps_previous == 0:
+        mash_kps = 1 / t1t2
+
+    else:
+        mash_kps = 1 / (1 / kps_previous + t1t2)
+
+    if mash_kps < kps_ez:
         return 0
     elif kps_previous > kps_hard:
-        return 1
+        return mash_kps
     else:
-        return something(kps_previous / (kps_hard - kps_previous))
+        return something(mash_kps / (kps_hard - kps_ez))
+    return 1 / delta_t
 
 
 def variable_trill_coef(kps):
@@ -81,8 +93,8 @@ def calc_trill_kps_has_trill(t1t2, t0t2, p):
 
 
 # Calculates the note's kps when it can be smashed
-def calc_trill_kps_has_mash(t1t2, max_trill_kps, previous_kps):
-    return quarter_ellipse(t1t2, max_trill_kps, previous_kps * mash_coef(previous_kps))
+def calc_trill_kps_has_mash(t1t2, max_trill_kps, kps_previous):
+    return quarter_ellipse(t1t2, max_trill_kps, calc_mash_kps(t1t2, kps_previous))
 
 
 # Calculates the kps of the last note of an half trill (it's F)
@@ -101,7 +113,7 @@ def trill_kps_calc(t0t2, t1t2, t2t3, jack_limit):
     # Distinguish between mash and trill zone
     if t1t2 < tau_mash:
         trill_kps_has_mash = calc_trill_kps_has_mash(t1t2, calc_trill_kps_has_trill(tau_mash, t0t2, p),
-                                                     kps_previous * mash_coef(kps_previous))
+                                                     calc_mash_kps(t1t2, kps_previous))
         return min(trill_kps_has_mash, trill_kps_has_trill)
     else:
         return trill_kps_has_trill

@@ -23,8 +23,7 @@ def kps_VS_complexity(kps, complexity):
 def kps_VS_kps_felt(kps, kps_felt):
     plt.figure()
     plt.title("kps VS kps_felt ")
-    (m, b) = np.polyfit(kps, kps_felt, 1)
-    fit_fn = np.poly1d(np.array([m, b]))
+    fit_fn = np.poly1d(np.array([1, 0]))
     plt.plot(kps, kps_felt, '.')
     plt.plot(kps, fit_fn(kps))
 
@@ -51,6 +50,11 @@ def complexity(t, complexity):
     plt.figure()
     plt.title("complexity")
     plt.plot(t, complexity)
+
+def kps(t, complexity):
+    plt.figure()
+    plt.title("kps")
+    plt.plot(t, complexity, '.')
 
 
 def G():
