@@ -5,7 +5,7 @@ import sys
 import codecs
 import glob
 import time
-from main_functions import delete_LN_release
+from main_functions import *
 from map_extraction import extract_info
 from calc_kps import calc_kps
 from calc_stamina import calc_felt_kps
@@ -73,7 +73,7 @@ for element in os.listdir(folder_path):
             mean_complexity = np.mean(np.array(complexity))
 
             # Current calculation of overall_difficulties is a multiplication
-            overall_difficulty = np.mean(np.array(complexity) * np.array(felt_kps))
+            overall_difficulty = rms(np.array(complexity) * np.array(felt_kps), 1)
 
             # Writes information into the file
             # (if there is a difference between nb_columns and true_nb_columns the map isn't well encoded)
@@ -111,10 +111,10 @@ for element in os.listdir(folder_path):
             (For FFT graphs see the calc_complexity.py file)
             '''
             # graph.complexity(map[:, 2], complexity)
-            graph.kps(map[:,2], kps)
+            # graph.kps(map[:,2], kps)
             # graph.kps_felt_minus_kps(left_i, right_i, kps, felt_kps, map[:, 2])
             # graph.kps_VS_complexity(kps, complexity)
-            graph.kps_VS_kps_felt(kps, felt_kps)
+            # graph.kps_VS_kps_felt(kps, felt_kps)
             # graph.G()
             # graph.F()
 
