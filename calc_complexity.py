@@ -1,73 +1,106 @@
 import numpy as np
+import sys
+import matplotlib.pyplot as plt
 
 '''
-Reminder : type_note == 0 normal, 1 LN hold, 2 LN release
+An FFT (Discrete Fourier Transform) is done on a sample of the map.
+
+Sample_length : sample_size in number and sample_size*TF_time_scale in ms
+Sample_width : nb_columns + space_btw_columns*(nb_columns-1)
+
+Complexity is calculated by a sum over the absolute value of Fourier' s coefficient. 
+(Maybe will select only some frequencies later for a more precise complexity.)
 '''
 
-base_elements_complexity = [[0, 0.01, 0.012, 0, 0],  # value for base elements of 2 timing points patterns
-                            [0.01, 0, 0.002, 0, 0],  # lines : type of note 1st timing point
-                            [0, 0, 0, 0.001, 0.02],
-                            [0.005, -0.005, -0.003, 0, 0],
-                            [0, 0, 0, 0.02, 0.03]]  # columns : type of note 2nd timing point
+TF_time_scale = 1  # Length in ms of a pixel of the sample
+sample_size = 2000  # Number of pixel for sample length
+note_placement = 999  # Placement of the note (for which complexity is calculated) inside the sample
+# (0 will put it at the bottom of the sample and sample_size - 1 will put it at the top )
+space_btw_columns = 30  # Pixels of void between each columns for a more precise FFT
 
 
-def calc_complexity_2_tp(pattern1, pattern0):
-    complexity_2_tp = 0
-    nb_columns = len(pattern0)
-    middle = int(np.ceil(len(pattern1) / 2))
-    pattern_2_tp = np.array([pattern1, pattern0])
-    pattern_2_tp_reversed = np.array([pattern0, pattern1])
-    if np.array_equal(pattern1, pattern0):
-        complexity_2_tp -= 0.05
-    if np.array_equal(pattern1, pattern0[::-1]):
-        complexity_2_tp -= 0.02
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp[nb_columns - middle:]):
-        complexity_2_tp -= 0.03
-    if np.array_equal(pattern_2_tp[:middle], pattern_2_tp_reversed[nb_columns - middle:]):
-        complexity_2_tp -= 0.03
-
-    for k in range(nb_columns):
-        complexity_2_tp += base_elements_complexity[pattern0[k]][pattern1[k]]
-
-    return complexity_2_tp
+def create_array(map, nb_columns):  # Creates the first sample
+    sample = []
+    t = map[:, 2]
+    column = map[:, 0]
+    for i in range(sample_size):
+        sample.append(np.array([0 for k in range(nb_columns + space_btw_columns * (nb_columns - 1))]))
+    i = 0
+    j = 0
+    tc = t[0] + (j + note_placement) * TF_time_scale
+    while t[i] <= tc:
+        sample[note_placement][column[i] * space_btw_columns] = 1
+        i += 1
+    j = 1
+    return sample, j, i
 
 
-def compression_correction(l1, l0):
-    x = l1 / l0
-    return x ** 2 / (1 + x ** 4)
+def increment_array(sample, j, i, map, nb_columns):  # Creates next sample
+    t = map[:, 2]
+    column = map[:, 0]
+    nb_note = 0  # Needed to count number of notes placed on the same line in time (2 notes or more at same time)
+    tc = t[0] + (j + note_placement) * TF_time_scale
+    while t[i] > tc:
+        j += 1
+        sample.pop(0)
+        sample.append(np.array([0 for k in range(nb_columns + space_btw_columns * (nb_columns - 1))]))
+        tc += TF_time_scale
+
+    while i < len(map) and t[i] <= tc:
+        sample[note_placement][column[i] * space_btw_columns] = 1
+        nb_note += 1
+        i += 1
+    return sample, j, i, nb_note
 
 
-def correlation_correction(pattern):
-    return 1
+def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all notes
+    delta_i = 100
+    delta_j = 0
+    last_j = 0
+    complexity = []
+    t = map[:, 2]
+    nb_notes = len(t)
 
+    # First sample and complexity calculation
+    (sample, j, i) = create_array(map, nb_columns)
+    a_sample = np.array(sample)
+    fft_sample = abs(np.fft.rfft2(a_sample))
+    for k in range(i):  # Add a complexity for each note on same timeline
+        base_complexity = np.sum(fft_sample)
+        next_complexity = base_complexity - np.sum(fft_sample[0, 0])
+        next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
 
-def noeud_i(i, i_to_j, patterns, columns):
-    j = i_to_j(i)
-    nb_columns = len(patterns[0])
-    noeud = [patterns[0]]
-    for k in range(nb_columns):
-        if patterns[j - 1][k+1] != 0:
-            noeud.append([k - columns[i],[j-1,k]])
-    return noeud
+        complexity.append(next_complexity)
+        # Currently complexity is just the sum of the absolute value of FFT' s coefficients
 
+    while i < len(map):
 
-def calc_complexity(map, i_to_j, patterns, columns):
-    global_complexity = [1]
-    complexity_patterns = [0]
-    complexity_patterns.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
-    global_complexity.append(calc_complexity_2_tp(patterns[1, 1:], patterns[0, 1:]))
-    for j in range(2, i_to_j[len(columns) - 1] + 1):
-        complexity_patterns.append(calc_complexity_2_tp(patterns[j, 1:], patterns[j - 1, 1:]))
-        l0 = patterns[j][0]
-        complexity = 0
-        j_cor = j - 1
-        dist = l0
-        while dist < 5 * l0 and j_cor > 0:
-            compression = compression_correction(patterns[j][0], patterns[j_cor][0])
-            correlation = correlation_correction(patterns[j], patterns[j_cor])
-            complexity += complexity * complexity_patterns[j] * 1
-            global_complexity.append((1 + complexity_patterns[j]) * (1 + compression * (global_complexity[j - 1] - 1)))
-    global_complexity_i = []
-    for i in range(len(i_to_j)):
-        global_complexity_i.append(global_complexity[i_to_j[i]])
-    return np.array(global_complexity_i)
+        # A progress bar for the calculation
+        delta_i += 1
+        if delta_i > 100:
+            delta_i = 0
+            sys.stdout.write("\r calc_complexity : " + str("%.0f" % (100 * i / nb_notes)) + "%")
+            sys.stdout.flush()
+
+        (sample, j, i, nb_note) = increment_array(sample, j, i, map, nb_columns)
+
+        a_sample = np.array(sample)
+        fft_sample = np.fft.rfft2(a_sample)
+        abs_fft_sample = abs(fft_sample)
+        for k in range(nb_note):
+            base_complexity = np.sum(abs_fft_sample)
+            next_complexity = base_complexity - np.sum(abs_fft_sample[0, :]) + abs_fft_sample[0, 0]
+            next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
+
+            complexity.append(next_complexity)
+        '''
+        # Uncomment to have a FFT visualisation every 10000*TF_time_scale  of the map
+        delta_j = - last_j + j
+        if delta_j > 10000 :
+            last_j = j
+            tc = t[0] + (j + note_placement) * TF_time_scale
+            plt.plot(fft_sample[:,0])
+            plt.title("FFT at " + str("%.3f" % (tc/1000) + "s into the song."))
+            plt.show()
+        '''
+    return complexity
