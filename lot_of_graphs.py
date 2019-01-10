@@ -58,10 +58,16 @@ def kps(t, complexity):
     plt.plot(t, complexity, '.')
 
 
+def accuracy(difficulty):
+    plt.figure()
+    plt.title(" 'accuracy' VS player_level")
+    plt.plot(np.linspace(0, len(difficulty) * 0.001, len(difficulty)), difficulty)
+
+
 def histogram(data, name):
     plt.figure()
-    plt.title("Histogram of " +  name)
-    plt.hist(data, bins=20,)
+    plt.title("Histogram of " + name)
+    plt.hist(data, bins=20, )
 
 
 def G():

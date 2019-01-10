@@ -10,6 +10,7 @@ from map_extraction import extract_info
 from calc_kps import calc_kps
 from calc_stamina import calc_felt_kps
 from calc_complexity import calc_complexity
+from calc_overall_difficulty import calc_overall_difficulty
 
 import lot_of_graphs as graph
 
@@ -31,13 +32,12 @@ At the end of this file, you can find a lot of graphs to plot by uncommenting.
 
 TO DO :
 - Take into account LNs
-- Make a more precise calc_complexity
-- Tweak overall_difficulty calculation (change the multiply between complexity and kps_felt)
+- Understand  and make a more precise calc_complexity
+- Tweak the 'player_level and difficulty to accuracy' function
 - Generalise to N Keys style
 - Tweak all constant (for stamina, complexity, kps)
 - Probably others things
-...
-- Do a progressive calculation (make difficulty depends on player's level)
+
 '''
 
 g = codecs.open('DATA', 'a+', 'utf-8')
@@ -72,9 +72,10 @@ for element in os.listdir(folder_path):
             mean_felt_kps = np.mean(np.array(felt_kps))
             mean_complexity = np.mean(np.array(complexity))
 
-            # Current calculation of overall_difficulties is a multiplication
+            # Calculates the accuracy depending on the player_level
+            # The difficulty is considered the player_level at 95% accuracy
             difficulty = np.array(complexity) * np.array(felt_kps)
-            overall_difficulty = rms(difficulty, 1)
+            (overall_difficulty, overall_difficulty_95) = calc_overall_difficulty(difficulty)
 
             # Writes information into the file
             # (if there is a difference between nb_columns and true_nb_columns the map isn't well encoded)
@@ -85,11 +86,11 @@ for element in os.listdir(folder_path):
             g.write(';' + str(mean_kps))
             g.write(';' + str(mean_felt_kps))
             g.write(';' + str(mean_complexity))
-            g.write(';' + str(overall_difficulty) + '\r\n')
+            g.write(';' + str(overall_difficulty_95) + '\r\n')
             sys.stdout.write("\r")
 
             # Writes information in the terminal
-            print('dif = ' + str("%.2f" % overall_difficulty)
+            print('dif = ' + str("%.2f" % overall_difficulty_95)
                   + '; m_c =' + str("%.2f" % mean_complexity)
                   + '; m_kps = ' + str("%.2f" % mean_kps)
                   + '; m_f_kps = ' + str("%.2f" % mean_felt_kps)
@@ -121,7 +122,7 @@ for element in os.listdir(folder_path):
             # graph.histogram(complexity, "complexity")
             # graph.histogram(kps, 'kps')
             # graph.histogram(difficulty, "difficulty")
-
+            # graph.accuracy(overall_difficulty)
             plt.show()
 
         # Just little messages when the calculation isn't possible.
