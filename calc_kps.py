@@ -39,9 +39,6 @@ t_mash_min = 0.1  # size in seconds of the mash zone
 trill_coef = 0.7  # factor of reduction of the trill kps
 tau_kps_trill = 2  # typical kps at which the kps of the previous is taken into account
 
-kps_ez = -1  # kps at which it's sure to have both note of a jump jack
-kps_hard = 0  # kps at which it's impossible to have both note of a jump jack
-
 tau_jack = 10  # time between two note when you can't start to jack and the next
 tau_kps_jack = 10  # typical kps at which it stats to take into account the previous one
 
@@ -90,12 +87,7 @@ def calc_mash_kps(t1t2, t2t3):
     else:
         mash_kps = kps_previous
 
-    if mash_kps <= kps_ez:
-        return 0
-    elif kps_previous >= kps_hard:
-        return mash_kps
-    else:
-        return something(mash_kps / (kps_hard - kps_ez))
+    return mash_kps
 
 
 # Defines the change in trill_coef when it becomes a jack (limit t1t2 = 0)
@@ -136,7 +128,10 @@ def calc_trill_kps_has_mash(t1t2, max_trill_kps, mash_kps, t_mash):
 # Calculates the kps of the last note of an half trill (it's F)
 # It's two half function : one for the trill part the other for the mashing (when near the previous note)
 def trill_kps_calc(t0t2, t1t2, t2t3, jack_limit):
-    t_mash = min([t_mash_min, t0t2 / 2, t2t3])
+    if jack_limit:
+        t_mash = min([t_mash_min, t0t2 / 2, t2t3])
+    else:
+        t_mash = t_mash_min
 
     m_trill_coef = variable_trill_coef(t0t2, t1t2, t2t3, jack_limit, t_mash)
 
