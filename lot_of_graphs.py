@@ -51,10 +51,17 @@ def complexity(t, complexity):
     plt.title("complexity")
     plt.plot(t, complexity)
 
+
 def kps(t, complexity):
     plt.figure()
     plt.title("kps")
     plt.plot(t, complexity, '.')
+
+
+def histogram(data, name):
+    plt.figure()
+    plt.title("Histogram of " +  name)
+    plt.hist(data, bins=20,)
 
 
 def G():

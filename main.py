@@ -73,7 +73,8 @@ for element in os.listdir(folder_path):
             mean_complexity = np.mean(np.array(complexity))
 
             # Current calculation of overall_difficulties is a multiplication
-            overall_difficulty = rms(np.array(complexity) * np.array(felt_kps), 1)
+            difficulty = np.array(complexity) * np.array(felt_kps)
+            overall_difficulty = rms(difficulty, 1)
 
             # Writes information into the file
             # (if there is a difference between nb_columns and true_nb_columns the map isn't well encoded)
@@ -117,6 +118,9 @@ for element in os.listdir(folder_path):
             # graph.kps_VS_kps_felt(kps, felt_kps)
             # graph.G()
             # graph.F()
+            # graph.histogram(complexity, "complexity")
+            # graph.histogram(kps, 'kps')
+            # graph.histogram(difficulty, "difficulty")
 
             plt.show()
 

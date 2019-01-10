@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+import matplotlib.colors as col
 
 '''
 An FFT (Discrete Fourier Transform) is done on a sample of the map.
@@ -13,10 +14,12 @@ Complexity is calculated by a sum over the absolute value of Fourier' s coeffici
 '''
 
 TF_time_scale = 1  # Length in ms of a pixel of the sample
-sample_size = 2000  # Number of pixel for sample length
-note_placement = 999  # Placement of the note (for which complexity is calculated) inside the sample
+sample_size = 500  # Number of pixel for sample length
+note_placement = sample_size - 1  # Placement of the note (for which complexity is calculated) inside the sample
 # (0 will put it at the bottom of the sample and sample_size - 1 will put it at the top )
-space_btw_columns = 30  # Pixels of void between each columns for a more precise FFT
+# And currently doesn't work LOL
+
+space_btw_columns = 10  # Pixels of void between each columns for a more precise FFT
 
 
 def create_array(map, nb_columns):  # Creates the first sample
@@ -56,6 +59,7 @@ def increment_array(sample, j, i, map, nb_columns):  # Creates next sample
 def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all notes
     delta_i = 100
     delta_j = 0
+    nu = 0
     last_j = 0
     complexity = []
     t = map[:, 2]
@@ -93,14 +97,27 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
             next_complexity = next_complexity / (sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
 
             complexity.append(next_complexity)
+
         '''
-        # Uncomment to have a FFT visualisation every 10000*TF_time_scale  of the map
+        # Uncomment to have a FFT and pattern visualisation every 10000*TF_time_scale of the map
+        # And tweak conditions to choose for which complexity
         delta_j = - last_j + j
-        if delta_j > 10000 :
-            last_j = j
-            tc = t[0] + (j + note_placement) * TF_time_scale
-            plt.plot(fft_sample[:,0])
-            plt.title("FFT at " + str("%.3f" % (tc/1000) + "s into the song."))
+        if delta_j > 0:
+            if next_complexity < 10 :
+                nu += 1
+                last_j = j
+                plt.figure()
+                norm = col.Normalize()
+                plt.subplot(2, 1, 1)
+                plt.title("Pattern with " + str("%.2f" % next_complexity) + " complexity")
+                plt.pcolor(np.swapaxes(a_sample,0,1), norm=norm)
+                norm = col.Normalize()
+                plt.subplot(2, 1, 2)
+                plt.title("FFT visualisation at " + str("%.2f" % (t[i-1]/1000) ) + " s")
+                plt.pcolor(np.swapaxes(abs_fft_sample,0,1), norm=norm)
+        if nu == 10 :
+            nu = 0
             plt.show()
         '''
+
     return complexity
