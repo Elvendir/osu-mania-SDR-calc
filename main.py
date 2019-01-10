@@ -122,7 +122,7 @@ for element in os.listdir(folder_path):
             # graph.histogram(complexity, "complexity")
             # graph.histogram(kps, 'kps')
             # graph.histogram(difficulty, "difficulty")
-            # graph.accuracy(overall_difficulty)
+            # graph.accuracy(overall_difficulty, name)
             plt.show()
 
         # Just little messages when the calculation isn't possible.

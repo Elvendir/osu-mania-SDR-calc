@@ -58,10 +58,10 @@ def kps(t, complexity):
     plt.plot(t, complexity, '.')
 
 
-def accuracy(difficulty):
+def accuracy(difficulty, name):
     plt.figure()
     plt.title(" 'accuracy' VS player_level")
-    plt.plot(np.linspace(0, len(difficulty) * 0.001, len(difficulty)), difficulty)
+    plt.plot(np.linspace(0, len(difficulty) * 0.001, len(difficulty)), difficulty, label=name)
 
 
 def histogram(data, name):
