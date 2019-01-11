@@ -14,7 +14,7 @@ Complexity is calculated by a sum over the absolute value of Fourier' s coeffici
 '''
 
 TF_time_scale = 1  # Length in ms of a pixel of the sample
-sample_size = 500  # Number of pixel for sample length
+sample_size = 1000  # Number of pixel for sample length
 note_placement = sample_size - 1  # Placement of the note (for which complexity is calculated) inside the sample
 # (0 will put it at the bottom of the sample and sample_size - 1 will put it at the top )
 # And currently doesn't work LOL
@@ -56,7 +56,7 @@ def increment_array(sample, j, i, map, nb_columns):  # Creates next sample
     return sample, j, i, nb_note
 
 
-def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all notes
+def calc_complexity(map, nb_columns, kps):  # Calculates FFT and complexity of all notes
     delta_i = 100
     delta_j = 0
     nu = 0
@@ -102,8 +102,9 @@ def calc_complexity(map, nb_columns):  # Calculates FFT and complexity of all no
         # Uncomment to have a FFT and pattern visualisation every 10000*TF_time_scale of the map
         # And tweak conditions to choose for which complexity
         delta_j = - last_j + j
+        kps_mm = kps[i-1]
         if delta_j > 0:
-            if next_complexity < 10 :
+            if next_complexity < 1 and kps_mm > 9  :
                 nu += 1
                 last_j = j
                 plt.figure()
