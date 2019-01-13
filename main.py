@@ -118,7 +118,7 @@ for element in os.listdir(folder_path):
             graph.kps_felt_minus_kps(left_i, right_i, kps, felt_kps, map[:, 2], name)
             graph.kps_VS_complexity(kps, complexity, name)
             graph.kps_VS_kps_felt(kps, felt_kps, name)
-            # graph.G()
+            #graph.G()
             #graph.F()
             graph.histogram(complexity, "complexity", name)
             graph.histogram(kps, 'kps', name)

@@ -57,7 +57,7 @@ def calc_complexity(map, nb_columns, kps):  # Calculates FFT and complexity of a
     i = 0
     i_min = 0
     complexity = []
-    t = map[:, 2]
+    t = np.copy(map[:, 2])
     columns = map[:, 0]
     nb_notes = len(t)
     sample = initialize_sample(nb_columns)

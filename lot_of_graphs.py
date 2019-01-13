@@ -55,15 +55,15 @@ def kps_felt_minus_kps(left_i, right_i, kps, felt_kps, t, name):
 def complexity(t, complexity, name):
     plt.figure()
     plt.title("complexity")
-    plt.plot(t, complexity)
+    plt.plot(t / 1000, complexity)
     plt.savefig("graphs/" + "complexity_t" + "/" + name + ".png")
     plt.close()
 
 
-def kps(t, complexity , name):
+def kps(t, complexity, name):
     plt.figure()
     plt.title("kps")
-    plt.plot(t, complexity, '.')
+    plt.plot(t / 1000, complexity, '.')
     plt.savefig("graphs/" + "kps_t" + "/" + name + ".png")
     plt.close()
 
@@ -83,7 +83,10 @@ def accuracy(data):
 def histogram(data, type, name):
     plt.figure()
     plt.title("Histogram of " + type)
-    plt.hist(data, bins=20)
+    bandwidth = 0.5
+    if type == "complexity":
+        bandwidth = 0.1
+    plt.hist(data, bins=np.arange(0, max(data) + 1, bandwidth))
     plt.savefig("graphs/" + type + "/" + name + ".png")
     plt.close()
 
