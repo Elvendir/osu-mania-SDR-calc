@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from calc_stamina import G as func_G
 from calc_kps import calc_trill_kps as trill
 
+def adjust(xsize, ysize) :
+    plt.subplots_adjust(left=(14 / 25.4) / xsize, bottom=(6 / 25.4) / ysize,
+                        right=1 - (1 / 25.4) / xsize, top=1 - (10 / 25.4) / ysize)
+
 
 def tab_k(tab, list_i):
     tab_k = []
@@ -12,7 +16,7 @@ def tab_k(tab, list_i):
 
 
 def kps_VS_complexity(kps, complexity, name):
-    plt.figure()
+    plt.figure(figsize=(10, 10))
     plt.title("kps VS complexity")
     (m, b) = np.polyfit(kps, complexity, 1)
     fit_fn = np.poly1d(np.array([m, b]))
@@ -23,7 +27,7 @@ def kps_VS_complexity(kps, complexity, name):
 
 
 def kps_VS_kps_felt(kps, kps_felt, name):
-    plt.figure()
+    plt.figure(figsize=(10, 10))
     plt.title("kps VS kps_felt ")
     fit_fn = np.poly1d(np.array([1, 0]))
     plt.plot(kps, kps_felt, '.')
@@ -33,8 +37,9 @@ def kps_VS_kps_felt(kps, kps_felt, name):
 
 
 def kps_felt_minus_kps(left_i, right_i, kps, felt_kps, t, name):
-    plt.figure()
+    plt.figure(figsize=(t[len(t)-1]/10000, 5))
     plt.title("kps_felt - kps")
+    plt.margins(100/t[len(t)-1],0.1)
 
     t_k = tab_k(t, left_i)
     felt_kps_k = tab_k(felt_kps, left_i)
@@ -48,22 +53,25 @@ def kps_felt_minus_kps(left_i, right_i, kps, felt_kps, t, name):
     kps_k = tab_k(kps, right_i)
     plt.subplot(2, 1, 2)
     plt.plot(t_k, (np.array(felt_kps_k) - np.array(kps_k)), 'b.', linewidth=0.5)
+    adjust(t[len(t)-1]/10000, 5)
     plt.savefig("graphs/" + "kps_felt_minus_kps" + "/" + name + ".png")
     plt.close()
 
 
 def complexity(t, complexity, name):
-    plt.figure()
+    plt.figure(figsize=(t[len(t)-1]/10000, 5))
     plt.title("complexity")
     plt.plot(t / 1000, complexity)
+    adjust(t[len(t)-1]/10000, 5)
     plt.savefig("graphs/" + "complexity_t" + "/" + name + ".png")
     plt.close()
 
 
 def kps(t, complexity, name):
-    plt.figure()
+    plt.figure(figsize=(t[len(t)-1]/10000, 5))
     plt.title("kps")
     plt.plot(t / 1000, complexity, '.')
+    adjust(t[len(t)-1]/10000, 5)
     plt.savefig("graphs/" + "kps_t" + "/" + name + ".png")
     plt.close()
 
@@ -81,7 +89,7 @@ def accuracy(data):
 
 
 def histogram(data, type, name):
-    plt.figure()
+    plt.figure(figsize=(10, 10))
     plt.title("Histogram of " + type)
     bandwidth = 0.5
     if type == "complexity":
@@ -92,7 +100,7 @@ def histogram(data, type, name):
 
 
 def G():
-    plt.figure()
+    plt.figure(figsize=(10, 10))
     plt.title("G ideal reward for stamina")
     t = np.linspace(0, 60, 2000)
     for k in range(10):
@@ -100,7 +108,7 @@ def G():
 
 
 def F():
-    plt.figure()
+    plt.figure(figsize=(10, 10))
     plt.title("F depending on placement of the note inside the trill "
               "\n with kps_previous = 20 kps_trill = 5 to 20 in a 10'01'10'01 pattern")
     for j in np.linspace(0.025, 0.2, 20):
