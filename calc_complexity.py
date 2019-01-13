@@ -29,10 +29,11 @@ def initialize_sample(nb_columns):
     return sample
 
 
-def create_sample(t, columns, i_min, sample):  # Creates the first sample
+def create_sample(t, columns, i_min, sample_base):  # Creates the first sample
     i = 0
     j = 0
     nb_notes_sample = 0
+    sample = np.copy(sample_base)
     t_max = (sample_size - note_placement - 1) * TF_time_scale
     t_min = -TF_time_scale * note_placement
     i = i_min
@@ -60,10 +61,10 @@ def calc_complexity(map, nb_columns, kps):  # Calculates FFT and complexity of a
     t = np.copy(map[:, 2])
     columns = map[:, 0]
     nb_notes = len(t)
-    sample = initialize_sample(nb_columns)
+    base_sample = initialize_sample(nb_columns)
     while i < len(t):
         t -= t[i]
-        (fft_sample, nb_notes_sample, i_min) = create_sample(t, columns, i_min, sample)
+        (sample, nb_notes_sample, i_min) = create_sample(t, columns, i_min, base_sample)
 
         a_sample = np.array(sample)
         fft_sample = abs(np.fft.rfft2(a_sample))
@@ -71,8 +72,7 @@ def calc_complexity(map, nb_columns, kps):  # Calculates FFT and complexity of a
         # Currently complexity is just the sum of the absolute value of FFT' s coefficients
         base_complexity = np.sum(fft_sample)
         next_complexity = base_complexity - np.sum(fft_sample[0, 0])
-        next_complexity = next_complexity / (
-                np.sqrt(nb_notes_sample) * sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
+        next_complexity = next_complexity / ( sample_size * (nb_columns + (nb_columns - 1) * space_btw_columns))
         while i < len(t) and t[i] == 0:
             complexity.append(next_complexity)
             i += 1

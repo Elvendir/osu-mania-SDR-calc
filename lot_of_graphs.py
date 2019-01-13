@@ -77,14 +77,14 @@ def kps(t, complexity, name):
 
 
 def accuracy(data):
-    plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(40, 20))
     plt.title(" 'accuracy' VS player_level")
     for c, (difficulty, name) in enumerate(data):
         k = c // 10
         tab = ['-', '--', '-.', ':']
         plt.plot(np.linspace(0, len(difficulty) * 0.001, len(difficulty)), difficulty, label=name, linestyle=tab[k])
     plt.legend()
-    plt.savefig("graphs/+ Accuracy.png")
+    plt.savefig("graphs/Accuracy.png")
     plt.show()
 
 

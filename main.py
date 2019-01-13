@@ -75,7 +75,7 @@ for element in os.listdir(folder_path):
 
             # Calculates the accuracy depending on the player_level
             # The difficulty is considered the player_level at 95% accuracy
-            difficulty =  np.array(kps) # + np.array(complexity)
+            difficulty =  np.array(felt_kps) + np.array(complexity)
             (overall_difficulty, overall_difficulty_95) = calc_overall_difficulty(difficulty)
 
             # Writes information into the file
