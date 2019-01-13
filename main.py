@@ -47,6 +47,7 @@ print('Path of folder with .osu files')
 folder_path = input()
 
 # Calculates the difficulties for each map
+data = []
 for element in os.listdir(folder_path):
     t0 = time.time()
     file_path = folder_path + '/' + element
@@ -65,8 +66,8 @@ for element in os.listdir(folder_path):
             complexity = calc_complexity(map, nb_columns, kps)
 
             # Corrects complexity by suppressing it's dependence on kps
-            (m, b) = np.polyfit(kps, complexity, 1)
-            complexity = complexity - np.array(kps) * m
+            #(m, b) = np.polyfit(kps, complexity, 1)
+            #complexity = complexity - np.array(kps) * m
 
             mean_kps = np.mean(np.array(kps))
             mean_felt_kps = np.mean(np.array(felt_kps))
@@ -74,7 +75,7 @@ for element in os.listdir(folder_path):
 
             # Calculates the accuracy depending on the player_level
             # The difficulty is considered the player_level at 95% accuracy
-            difficulty = np.array(complexity) * np.array(felt_kps)
+            difficulty =  np.array(kps) # + np.array(complexity)
             (overall_difficulty, overall_difficulty_95) = calc_overall_difficulty(difficulty)
 
             # Writes information into the file
@@ -112,18 +113,19 @@ for element in os.listdir(folder_path):
             
             (For FFT graphs see the calc_complexity.py file)
             '''
-            # graph.complexity(map[:, 2], complexity)
-            # graph.kps(map[:,2], kps)
-            # graph.kps_felt_minus_kps(left_i, right_i, kps, felt_kps, map[:, 2])
-            # graph.kps_VS_complexity(kps, complexity)
-            # graph.kps_VS_kps_felt(kps, felt_kps)
+            graph.complexity(map[:, 2], complexity, name)
+            graph.kps(map[:,2], kps, name)
+            graph.kps_felt_minus_kps(left_i, right_i, kps, felt_kps, map[:, 2], name)
+            graph.kps_VS_complexity(kps, complexity, name)
+            graph.kps_VS_kps_felt(kps, felt_kps, name)
             # graph.G()
-            # graph.F()
-            # graph.histogram(complexity, "complexity")
-            # graph.histogram(kps, 'kps')
-            # graph.histogram(difficulty, "difficulty")
-            graph.accuracy(overall_difficulty, name)
-            plt.show()
+            #graph.F()
+            graph.histogram(complexity, "complexity", name)
+            graph.histogram(kps, 'kps', name)
+            graph.histogram(difficulty, "difficulty", name)
+
+            data.append((overall_difficulty, name))
+
 
         # Just little messages when the calculation isn't possible.
         elif true_nb_columns == 4:
@@ -133,4 +135,5 @@ for element in os.listdir(folder_path):
         else:
             print(name + "  Sorry, " + str(nb_columns) + "k calculation isn't implemented yet.")
 
+graph.accuracy(data)
 g.close()

@@ -34,9 +34,9 @@ In the calculation :
 LN_release_kps_correction = 70  # kps correction for LN release
 LN_note_after_release_correction = 150  # kps correction for note after LN release
 
-t_mash_min = 0.1  # size in seconds of the mash zone
+t_mash_min = 0.07  # size in seconds of the mash zone
 
-trill_coef = 0.7  # factor of reduction of the trill kps
+trill_coef = 0.6  # factor of reduction of the trill kps
 tau_kps_trill = 2  # typical kps at which the kps of the previous is taken into account
 
 tau_jack = 10  # time between two note when you can't start to jack and the next
@@ -44,32 +44,13 @@ tau_kps_jack = 10  # typical kps at which it stats to take into account the prev
 
 
 # useful functions to calculated trill_kps
-def something(x):
-    return (np.cos(x * np.pi / 2)) ** 2
-
-
-def hyperbole(x, hyperbole_slope, y):
-    return x / 2 / hyperbole_slope - np.sqrt((x / 2 / hyperbole_slope) ** 2 + y)
-
-
-def calc_hyperbole_slope(t_mash, kps_previous, kps_trill):
-    m = kps_previous - (1 / t_mash) ** 2
-    T = 0.5 * ((trill_coef / t_mash - kps_trill) / (1 / t_mash - kps_trill) + 1)
-    ln_thing = (trill_coef - T) / (trill_coef - 1)
-    if ln_thing <= 0:
-        return 0
+def quarter_ellipse(x, border, center, x_border):
+    if x >= x_border:
+        return border
+    elif x <= 0:
+        return center
     else:
-        Q = kps_previous * np.log(ln_thing)
-        return (1 / Q) * hyperbole(m, 1, kps_previous)
-
-
-def quarter_ellipse(t, max_trill_kps, mash_kps, t_mash):
-    if t >= t_mash:
-        return max_trill_kps
-    elif t <= 0:
-        return mash_kps
-    else:
-        return (mash_kps - max_trill_kps) * np.sqrt(1 - (t / t_mash) ** 2) + max_trill_kps
+        return (center - border) * np.sqrt(1 - (x / x_border) ** 2) + border
 
 
 # definition of the variables coefficient
@@ -90,60 +71,29 @@ def calc_mash_kps(t1t2, t2t3):
     return mash_kps
 
 
-# Defines the change in trill_coef when it becomes a jack (limit t1t2 = 0)
-def jack_limit_coef(t0t2, t1t2, t2t3, t_mash):
-    kps_previous = 1 / t2t3
-    hyperbole_slope = calc_hyperbole_slope(t_mash, kps_previous, 1 / t0t2)
-    if hyperbole_slope == 0:
-        return 0
-    q = hyperbole(kps_previous - (1 / t1t2) ** 2, hyperbole_slope, kps_previous)
-    return np.exp(q / kps_previous)
+# Defines the change in trill_coef when it becomes a jack (limit t1t2 = 0 and t2t3 = 0)
+def jack_limit_coef(t0t2, t1t2, t2t3, t_mash, jack_limit):
+    if jack_limit:
+        return max(quarter_ellipse(t1t2, 0, 1, t_mash), quarter_ellipse(t2t3, 0, 1, t_mash_min),
+                    quarter_ellipse(t1t2 - t0t2, 0, 1, t_mash) * quarter_ellipse(t2t3, 0, 1, t_mash_min))
+    else:
+        return quarter_ellipse(t1t2, 0, 1, t_mash)
 
 
 # Defines a variable trill_coef to take into account the fact that it can become a jack
-# at the limit t2t3 = 0
-def variable_trill_coef(t0t2, t1t2, t2t3, jack_limit, t_mash):
-    kps_previous = 1 / t2t3
-
-    if kps_previous == 0:
-        return trill_coef
-    elif t1t2 == 0:
-        return 1
-    elif not jack_limit:
-        return trill_coef
-    else:
-        return trill_coef - jack_limit_coef(t0t2, t1t2, t2t3, t_mash) * (trill_coef - 1)
-
-
-# Calculates the note's kps has a trill
-def calc_trill_kps_has_trill(t1t2, t0t2, m_trill_coef):
-    return (2 * m_trill_coef - 1) * (1 / t1t2 - 1 / t0t2) + 1 / t0t2
-
-
-# Calculates the note's kps when it can be smashed
-def calc_trill_kps_has_mash(t1t2, max_trill_kps, mash_kps, t_mash):
-    return quarter_ellipse(t1t2, max_trill_kps, mash_kps, t_mash)
+# at the limit t2t3 = 0, t1t2 = 0 and t0t1 = 0
+def variable_trill_coef(jack_coef):
+    return trill_coef - jack_coef * (trill_coef - 1)
 
 
 # Calculates the kps of the last note of an half trill (it's F)
-# It's two half function : one for the trill part the other for the mashing (when near the previous note)
-def trill_kps_calc(t0t2, t1t2, t2t3, jack_limit):
-    if jack_limit:
-        t_mash = min([t_mash_min, t0t2 / 2, t2t3])
-    else:
-        t_mash = t_mash_min
-
-    m_trill_coef = variable_trill_coef(t0t2, t1t2, t2t3, jack_limit, t_mash)
-
-    trill_kps_has_trill = calc_trill_kps_has_trill(t1t2, t0t2, m_trill_coef)
-
-    # Distinguish between mash and trill zone
-    if t1t2 < t_mash:
-        trill_kps_has_mash = calc_trill_kps_has_mash(t1t2, calc_trill_kps_has_trill(t_mash, t0t2, m_trill_coef),
-                                                     calc_mash_kps(t1t2, t2t3), t_mash)
-        return min(trill_kps_has_mash, trill_kps_has_trill)
-    else:
-        return trill_kps_has_trill
+def calc_trill_kps(t0t2, t1t2, t2t3, jack_limit):
+    t_mash = t_mash_min
+    if jack_limit :
+        t_mash = min(t_mash_min,t0t2)
+    jack_coef = jack_limit_coef(t0t2, t1t2, t2t3, t_mash, jack_limit)
+    trill_coef = variable_trill_coef(jack_coef)
+    return (2 * trill_coef - 1) * (1 / (t1t2 + jack_coef * t2t3 ) - 1 / t0t2) + 1 / t0t2
 
 
 # Does the kps calculation for a note depending on jack or half trill
@@ -157,7 +107,7 @@ def next_kps(i, count, map, last_LN_start, last):
     # special case : first calculate note
     # jack limit is a bool saying if when t2t3 = 0 the note is a jack
     if count == 3:
-        t2t3 = float("inf")
+        t2t3 = 1000
         jack_limit = False
     else:
         t2t3 = t[i[count - 3]] - t[i[count - 4]]
@@ -165,7 +115,7 @@ def next_kps(i, count, map, last_LN_start, last):
 
     # special case : last calculate note
     if last:
-        t0t2 = float("inf")
+        t0t2 = 1000
     else:
         t0t2 = t[i[count - 1]] - t[i[count - 3]]
 
@@ -182,7 +132,7 @@ def next_kps(i, count, map, last_LN_start, last):
     # if jack but the other way around
 
     else:
-        kps = trill_kps_calc(t0t2, t1t2, t2t3, jack_limit)
+        kps = calc_trill_kps(t0t2, t1t2, t2t3, jack_limit)
         return kps
 
 
